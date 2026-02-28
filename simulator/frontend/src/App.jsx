@@ -8,6 +8,7 @@ import ImmersiveMode from './components/ImmersiveMode';
 import FeedbackReport from './components/FeedbackReport';
 import SocialApp from './social/App';
 import InnerCircleApp from './inner-circle/App';
+import ClarityEngineApp from './clarity-engine/App';
 import MainHub from './MainHub';
 
 // Root shell: activeModule = null | 'simulator' | 'social'
@@ -118,6 +119,11 @@ export default function App() {
       {activeModule === 'inner-circle' && (
         <motion.div key="inner-circle" variants={fade} initial="initial" animate="animate" exit="exit" transition={t}>
           <InnerCircleApp onBack={() => setActiveModule(null)} />
+        </motion.div>
+      )}
+      {activeModule === 'clarity-engine' && (
+        <motion.div key="clarity-engine" variants={fade} initial="initial" animate="animate" exit="exit" transition={t}>
+          <ClarityEngineApp onBack={() => setActiveModule(null)} />
         </motion.div>
       )}
     </AnimatePresence>

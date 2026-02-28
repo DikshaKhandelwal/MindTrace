@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Brain, Users, Heart, ArrowRight, Sparkles, Shield, Activity } from 'lucide-react';
+import { Brain, Users, Heart, Zap, ArrowRight, Sparkles, Shield, Activity } from 'lucide-react';
 
 const MODULES = [
   {
@@ -49,6 +49,22 @@ const MODULES = [
     border: 'border-violet-400/30',
     dotColor: 'bg-violet-400',
     cta: 'Enter Your Circle',
+  },
+  {
+    id: 'clarity-engine',
+    badge: 'Module 04',
+    title: 'Clarity Engine',
+    subtitle: 'Cognitive Debugger — map, challenge, and rewire your thinking',
+    description:
+      'A system that visualizes your thinking as a live graph, detects fear loops and cognitive biases, simulates future paths, and guides you from overthinking to clear, confident decisions.',
+    Icon: Zap,
+    gradient: 'from-pink-500 to-purple-500',
+    glow: 'rgba(236,72,153,0.30)',
+    features: ['Thought graph', 'Loop detector', 'Bias scanner', 'Regret simulation'],
+    bg: 'from-pink-900/40 to-purple-900/20',
+    border: 'border-pink-400/30',
+    dotColor: 'bg-pink-400',
+    cta: 'Debug My Thinking',
   },
 ];
 
