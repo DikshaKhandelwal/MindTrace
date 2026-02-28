@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Wind, ChevronDown, ChevronUp, MessageSquare } from 'lucide-react';
 import { CATEGORY_META } from '../data/posts';
@@ -14,11 +15,18 @@ export default function PostCard({ post }) {
 
   const meta = CATEGORY_META[post.category] ?? { label: post.category, bg: 'bg-stone-100', text: 'text-stone-600', dot: 'bg-stone-400' };
 
-  function toggle(key) {
-    const wasOn = toggled[key];
-    setToggled(prev => ({ ...prev, [key]: !prev[key] }));
-    setReactions(prev => ({ ...prev, [key]: prev[key] + (wasOn ? -1 : 1) }));
-  }
+  const toggle = useCallback((key) => {
+    const willBeOn = !toggled[key];
+    const delta    = willBeOn ? 1 : -1;
+    // Optimistic update
+    setToggled(prev => ({ ...prev, [key]: willBeOn }));
+    setReactions(prev => ({ ...prev, [key]: prev[key] + delta }));
+    // Persist to backend (fire & forget — revert on fail)
+    axios.post(`/api/community/react/${post.id}`, { type: key, delta }).catch(() => {
+      setToggled(prev => ({ ...prev, [key]: !willBeOn }));
+      setReactions(prev => ({ ...prev, [key]: prev[key] - delta }));
+    });
+  }, [toggled, post.id]);
 
   return (
     <motion.div

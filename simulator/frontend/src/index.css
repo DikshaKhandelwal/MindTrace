@@ -16,7 +16,7 @@
   }
 
   body {
-    @apply font-sans antialiased;
+    @apply font-mono antialiased;
     background-color: #0f1a14;
     min-height: 100%;
     color: #1e2d28;
@@ -145,6 +145,53 @@
     outline: none !important;
   }
 
+  /* ── Mind Check — Joy page ─────────────────────────────────────────────── */
+  .joy-bg {
+    background-color: #f7edda;
+    background-image:
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 59px,
+        rgba(180,140,80,0.06) 59px,
+        rgba(180,140,80,0.06) 60px
+      );
+    min-height: 100vh;
+  }
+
+  @keyframes joy-float {
+    0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.55; }
+    50%       { transform: translateY(-22px) rotate(4deg); opacity: 0.80; }
+  }
+
+  /* ── Mind Check module ─────────────────────────────────────────────────── */
+  .check-bg {
+    background-color: #f0ebe3;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,0,0,0.045) 39px, rgba(0,0,0,0.045) 40px);
+    min-height: 100vh;
+    color: #1a1510;
+  }
+
+  .check-card {
+    background: #e8e0d4;
+    border: 1.5px solid rgba(0,0,0,0.10);
+    border-radius: 0.5rem;
+    font-family: 'Space Mono', ui-monospace, monospace;
+  }
+
+  .check-bg input,
+  .check-bg textarea {
+    background: rgba(255,255,255,0.6) !important;
+    color: #1a1510 !important;
+    border-color: rgba(0,0,0,0.18) !important;
+    font-family: 'Space Mono', ui-monospace, monospace;
+  }
+  .check-bg input::placeholder,
+  .check-bg textarea::placeholder {
+    color: rgba(0,0,0,0.28) !important;
+  }
+
   /* Mood glow nodes */
   .mood-okay        { box-shadow: 0 0 16px rgba(52,211,153,0.45); }
   .mood-great       { box-shadow: 0 0 20px rgba(251,191,36,0.45); }
@@ -156,6 +203,34 @@
   .risk-low    { background: rgba(52,211,153,0.12); color: #6ee7b7; border: 1px solid rgba(52,211,153,0.2); }
   .risk-medium { background: rgba(251,191,36,0.12); color: #fcd34d; border: 1px solid rgba(251,191,36,0.2); }
   .risk-high   { background: rgba(244,114,182,0.12); color: #f9a8d4; border: 1px solid rgba(244,114,182,0.2); }
+
+  /* ── Sleep Guardian module ─────────────────────────────────────────────── */
+  .sleep-bg {
+    background:
+      radial-gradient(ellipse at 20% 15%, rgba(99,79,220,0.18) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 80%, rgba(139,92,246,0.12) 0%, transparent 50%),
+      linear-gradient(160deg, #080d1e 0%, #0d1230 40%, #0a0d28 70%, #060812 100%);
+    min-height: 100vh;
+    color: #e0e4ff;
+  }
+
+  .sleep-bg input,
+  .sleep-bg textarea,
+  .sleep-bg select {
+    background: rgba(10, 8, 40, 0.55) !important;
+    color: rgba(220, 215, 255, 0.92) !important;
+    border-color: rgba(99, 79, 220, 0.30) !important;
+  }
+  .sleep-bg input::placeholder,
+  .sleep-bg textarea::placeholder {
+    color: rgba(160, 140, 240, 0.35) !important;
+  }
+  .sleep-bg input:focus,
+  .sleep-bg textarea:focus {
+    border-color: rgba(139, 92, 246, 0.55) !important;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12) !important;
+    outline: none !important;
+  }
 
 
   /* Custom scrollbar */

@@ -4,7 +4,10 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans:  ['"Space Mono"', 'ui-monospace', 'monospace'],
+        serif: ['"Playfair Display"', 'Georgia', 'serif'],
+        mono:  ['"Space Mono"', 'ui-monospace', 'monospace'],
+        inter: ['Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
         lavender: {

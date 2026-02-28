@@ -1,21 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Pencil } from 'lucide-react';
-import { POSTS, CATEGORY_META } from '../data/posts';
+import { Pencil, Loader2 } from 'lucide-react';
+import axios from 'axios';
+import { CATEGORY_META } from '../data/posts';
 import PostCard from './PostCard';
 import PostComposer from './PostComposer';
 
 const FILTERS = ['all', ...Object.keys(CATEGORY_META)];
 
 export default function CommunityFeed({ initialFilter = 'all' }) {
-  const [posts, setPosts] = useState(POSTS);
-  const [filter, setFilter] = useState(initialFilter);
+  const [posts,        setPosts]        = useState([]);
+  const [filter,       setFilter]       = useState(initialFilter);
   const [composerOpen, setComposerOpen] = useState(false);
+  const [loading,      setLoading]      = useState(true);
+
+  // Fetch from real backend on mount
+  useEffect(() => {
+    axios.get('/api/community/posts')
+      .then(r => setPosts(r.data))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
 
   const visible = filter === 'all' ? posts : posts.filter(p => p.category === filter);
 
   function handleNewPost(post) {
-    setPosts(prev => [post, ...prev]);
+    if (post) setPosts(prev => [post, ...prev]);
   }
 
   return (
@@ -49,19 +59,25 @@ export default function CommunityFeed({ initialFilter = 'all' }) {
 
       {/* Post list */}
       <div className="space-y-4">
-        <AnimatePresence>
-          {visible.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-12 text-stone-400 text-sm"
-            >
-              No posts in this category yet. Be the first to share.
-            </motion.div>
-          ) : (
-            visible.map(post => <PostCard key={post.id} post={post} />)
-          )}
-        </AnimatePresence>
+        {loading ? (
+          <div className="flex justify-center py-16">
+            <Loader2 size={22} className="animate-spin text-amber-400" />
+          </div>
+        ) : (
+          <AnimatePresence>
+            {visible.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-12 text-stone-400 text-sm"
+              >
+                No posts in this category yet. Be the first to share.
+              </motion.div>
+            ) : (
+              visible.map(post => <PostCard key={post.id} post={post} />)
+            )}
+          </AnimatePresence>
+        )}
       </div>
 
       {/* FAB */}

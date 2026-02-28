@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Brain, Users, Heart, Zap, ArrowRight, Sparkles, Shield, Activity } from 'lucide-react';
+import { Brain, Users, Heart, Zap, ActivitySquare, ArrowRight, Sparkles, Shield, Activity, Moon } from 'lucide-react';
 
 const MODULES = [
   {
@@ -51,6 +51,39 @@ const MODULES = [
     cta: 'Enter Your Circle',
   },
   {
+    id: 'mind-check',
+    badge: 'Module 05',
+    title: 'Mind Check',
+    subtitle: 'A signal — not a diagnosis',
+    description:
+      'Ten real-life scenarios. Your honest reactions. In 5 minutes, find out whether what you\'re carrying is normal weight or a signal worth taking seriously — and what kind of support might actually help.',
+    Icon: ActivitySquare,
+    gradient: 'from-stone-400 to-stone-600',
+    glow: 'rgba(168,162,158,0.30)',
+    features: ['10 scenarios', 'No right answers', 'Signal not score', 'Professional guidance'],
+    bg: 'from-stone-800/40 to-stone-900/30',
+    border: 'border-stone-400/25',
+    dotColor: 'bg-stone-400',
+    cta: 'Check Your Signal',
+  },
+  
+  {
+    id: 'sleep-guardian',
+    badge: 'Module 06',
+    title: 'Sleep Guardian',
+    subtitle: 'Luna watches over your nights',
+    description:
+      'Track caffeine timing, bedtime habits, and screen-off patterns. Luna — your sleepy ghost companion — reacts to your sleep health and earns Moon Cookies for good nights.',
+    Icon: Moon,
+    gradient: 'from-indigo-500 to-violet-700',
+    glow: 'rgba(99,79,220,0.35)',
+    features: ['Ghost mood tracker', 'Caffeine half-life', 'Moon Cookies', 'Streak rewards'],
+    bg: 'from-indigo-900/50 to-violet-900/30',
+    border: 'border-indigo-400/30',
+    dotColor: 'bg-indigo-400',
+    cta: 'Ask Luna',
+  },
+  {
     id: 'clarity-engine',
     badge: 'Module 04',
     title: 'Clarity Engine',
@@ -100,10 +133,11 @@ export default function MainHub({ onEnter }) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.55, delay: 0.1 }}
-        className="text-5xl sm:text-6xl font-extrabold text-center mb-4 leading-tight"
+        className="font-serif font-black text-center mb-4 leading-none"
+        style={{ fontSize: 'clamp(3rem, 7vw, 5.5rem)', letterSpacing: '-0.02em' }}
       >
         <span className="text-white">Your mind,</span>{' '}
-        <span className="bg-gradient-to-r from-sage-400 via-teal-300 to-amber-300 bg-clip-text text-transparent">
+        <span className="bg-gradient-to-r from-sage-400 via-teal-300 to-amber-300 bg-clip-text text-transparent italic">
           supported.
         </span>
       </motion.h1>
@@ -164,8 +198,8 @@ export default function MainHub({ onEnter }) {
                 </div>
               </div>
 
-              <h2 className="text-2xl font-bold text-white mb-1">{title}</h2>
-              <p className="text-sm font-medium text-white/50 mb-3">{subtitle}</p>
+              <h2 className="font-serif font-black text-2xl text-white mb-1">{title}</h2>
+              <p className="font-mono text-xs font-medium text-white/45 mb-3">{subtitle}</p>
               <p className="text-sm text-white/60 leading-relaxed mb-6">{description}</p>
 
               {/* Feature pills */}
@@ -191,14 +225,34 @@ export default function MainHub({ onEnter }) {
       </motion.div>
 
       {/* Footer */}
-      <motion.p
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.7 }}
-        className="mt-12 text-stone-600 text-xs text-center"
+        className="mt-12 flex flex-col items-center gap-4"
       >
-        All conversations and community posts are private. Nothing is identified.
-      </motion.p>
+        <p className="text-stone-600 text-xs text-center">
+          All conversations and community posts are private. Nothing is identified.
+        </p>
+
+        {/* Joy page shortcut */}
+        <motion.button
+          onClick={() => onEnter('joy')}
+          whileHover={{ scale: 1.06, y: -2 }}
+          whileTap={{ scale: 0.97 }}
+          className="flex items-center gap-2 px-5 py-2 rounded-full border text-xs font-mono transition-all"
+          style={{
+            borderColor: 'rgba(240,100,150,0.25)',
+            background:  'rgba(240,100,150,0.07)',
+            color:       'rgba(240,150,180,0.75)',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(240,100,150,0.15)'; e.currentTarget.style.borderColor = 'rgba(240,100,150,0.45)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(240,100,150,0.07)'; e.currentTarget.style.borderColor = 'rgba(240,100,150,0.25)'; }}
+        >
+          <span style={{ fontSize: '0.9rem' }}>💗</span>
+          need a moment?
+        </motion.button>
+      </motion.div>
     </div>
   );
 }

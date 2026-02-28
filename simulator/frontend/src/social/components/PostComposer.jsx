@@ -2,10 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, X, Loader2, Phone } from 'lucide-react';
-import { CATEGORY_META, ANON_NAMES, ANON_COLORS } from '../data/posts';
-
-function randomName() { return ANON_NAMES[Math.floor(Math.random() * ANON_NAMES.length)]; }
-function randomColor() { return ANON_COLORS[Math.floor(Math.random() * ANON_COLORS.length)]; }
+import { CATEGORY_META } from '../data/posts';
 
 const MAX = 600;
 
@@ -33,30 +30,29 @@ export default function PostComposer({ onClose, onPublish }) {
       if (data.isCrisis) {
         setCrisis(true);
       } else {
-        onPublish({
+        // Use the server-assigned post (persisted) or fall back to local
+        onPublish(data.post ?? {
           id: `u-${Date.now()}`,
-          anonymousName: randomName(),
-          avatarColor: randomColor(),
+          anonymousName: 'Gentle Storm',
+          avatarColor: '#6366f1',
           timeAgo: 'just now',
-          category,
+          category: data.suggestedCircle || category,
           content: content.trim(),
           reactions: { heart: 0, hug: 0, relate: 0 },
-          replyCount: 0,
           compassion: data.compassion || null,
         });
         onClose();
       }
     } catch {
-      // Publish locally even if API fails
+      // Publish locally even if API fails — no lock-out
       onPublish({
         id: `u-${Date.now()}`,
-        anonymousName: randomName(),
-        avatarColor: randomColor(),
+        anonymousName: 'Gentle Storm',
+        avatarColor: '#6366f1',
         timeAgo: 'just now',
         category,
         content: content.trim(),
         reactions: { heart: 0, hug: 0, relate: 0 },
-        replyCount: 0,
         compassion: null,
       });
       onClose();

@@ -9,6 +9,9 @@ import FeedbackReport from './components/FeedbackReport';
 import SocialApp from './social/App';
 import InnerCircleApp from './inner-circle/App';
 import ClarityEngineApp from './clarity-engine/App';
+import MindCheckApp from './mind-check/App';
+import JoyPage from './mind-check/components/JoyPage';
+import SleepGuardianApp from './sleep-guardian/App';
 import MainHub from './MainHub';
 
 // Root shell: activeModule = null | 'simulator' | 'social'
@@ -124,6 +127,21 @@ export default function App() {
       {activeModule === 'clarity-engine' && (
         <motion.div key="clarity-engine" variants={fade} initial="initial" animate="animate" exit="exit" transition={t}>
           <ClarityEngineApp onBack={() => setActiveModule(null)} />
+        </motion.div>
+      )}
+      {activeModule === 'mind-check' && (
+        <motion.div key="mind-check" variants={fade} initial="initial" animate="animate" exit="exit" transition={t}>
+          <MindCheckApp onBack={() => setActiveModule(null)} />
+        </motion.div>
+      )}
+      {activeModule === 'sleep-guardian' && (
+        <motion.div key="sleep-guardian" variants={fade} initial="initial" animate="animate" exit="exit" transition={t}>
+          <SleepGuardianApp onBack={() => setActiveModule(null)} />
+        </motion.div>
+      )}
+      {activeModule === 'joy' && (
+        <motion.div key="joy" variants={fade} initial="initial" animate="animate" exit="exit" transition={t}>
+          <JoyPage onDone={() => setActiveModule(null)} />
         </motion.div>
       )}
     </AnimatePresence>
