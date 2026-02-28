@@ -1,0 +1,210 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans antialiased;
+    background-color: #0f1a14;
+    min-height: 100vh;
+    color: #1e2d28;
+  }
+
+  /* Per-module backgrounds */
+  .sim-bg {
+    background-image: url('/bg_simulator.png');
+    background-size: cover;
+    background-position: center top;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-color: #deeee5;
+    min-height: 100vh;
+  }
+
+  .social-bg {
+    background-image: url('/module2_bg.png');
+    background-size: cover;
+    background-position: center top;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-color: #f5ebe0;
+    min-height: 100vh;
+    color: #1c0a00;
+  }
+
+  /* Inner Circle module background */
+  .inner-bg {
+    background:
+      linear-gradient(to bottom,
+        rgba(20, 8, 50, 0.42) 0%,
+        rgba(10, 4, 28, 0.28) 40%,
+        rgba(10, 4, 28, 0.28) 60%,
+        rgba(20, 8, 50, 0.45) 100%
+      ),
+      url('/module3.jpg') center / cover no-repeat fixed;
+    min-height: 100vh;
+    color: #e8e6f0;
+  }
+
+  .inner-card {
+    background: rgba(12, 5, 35, 0.55);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(190, 150, 255, 0.10);
+    border-radius: 1.5rem;
+  }
+
+  .inner-card-hover {
+    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .inner-card-hover:hover {
+    background: rgba(30, 15, 65, 0.60);
+    border-color: rgba(190, 150, 255, 0.18);
+    box-shadow: 0 0 48px rgba(139,92,246,0.15);
+  }
+
+  /* All inputs/textareas inside inner-circle must have dark bg so text is visible */
+  .inner-bg input,
+  .inner-bg textarea,
+  .inner-bg select {
+    background: rgba(8, 3, 25, 0.65) !important;
+    color: rgba(240, 235, 255, 0.90) !important;
+    border-color: rgba(190, 150, 255, 0.18) !important;
+  }
+  .inner-bg input::placeholder,
+  .inner-bg textarea::placeholder {
+    color: rgba(200, 180, 255, 0.28) !important;
+  }
+  .inner-bg input:focus,
+  .inner-bg textarea:focus {
+    border-color: rgba(139, 92, 246, 0.55) !important;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12) !important;
+    outline: none !important;
+  }
+
+  /* Mood glow nodes */
+  .mood-okay        { box-shadow: 0 0 16px rgba(52,211,153,0.45); }
+  .mood-great       { box-shadow: 0 0 20px rgba(251,191,36,0.45); }
+  .mood-low         { box-shadow: 0 0 16px rgba(251,146,60,0.45); }
+  .mood-overwhelmed { box-shadow: 0 0 20px rgba(244,114,182,0.50); }
+  .mood-silent      { box-shadow: 0 0 10px rgba(148,163,184,0.25); }
+
+  /* Risk badge */
+  .risk-low    { background: rgba(52,211,153,0.12); color: #6ee7b7; border: 1px solid rgba(52,211,153,0.2); }
+  .risk-medium { background: rgba(251,191,36,0.12); color: #fcd34d; border: 1px solid rgba(251,191,36,0.2); }
+  .risk-high   { background: rgba(244,114,182,0.12); color: #f9a8d4; border: 1px solid rgba(244,114,182,0.2); }
+
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(61, 138, 99, 0.28);
+    border-radius: 99px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(61, 138, 99, 0.50);
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/65 backdrop-blur-xl rounded-3xl border border-white/70 shadow-soft;
+  }
+
+  .glass-card-strong {
+    @apply bg-white/80 backdrop-blur-2xl rounded-3xl border border-white/80 shadow-soft-lg;
+  }
+
+  /* Social module glass variants */
+  .glass-header {
+    @apply bg-white/70 backdrop-blur-xl border-b border-white/60;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+  }
+
+  .circle-card {
+    @apply cursor-pointer transition-all duration-200;
+  }
+  .circle-card:hover {
+    box-shadow: 0 8px 32px rgba(180, 83, 9, 0.18);
+  }
+
+  .reaction-btn {
+    @apply flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-stone-200
+      bg-white/60 text-stone-500 text-xs hover:border-amber-300 hover:text-amber-700
+      transition-all duration-150;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-semibold text-white
+      bg-gradient-to-r from-sage-500 to-sage-600
+      hover:from-sage-600 hover:to-sage-700
+      shadow-soft active:scale-95 transition-all duration-200;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-medium
+      text-sage-600 hover:bg-sage-50 active:scale-95 transition-all duration-200;
+  }
+
+  .tag {
+    @apply inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium;
+  }
+
+  .section-fade {
+    animation: section-fade 0.5s ease-out forwards;
+  }
+}
+
+@keyframes section-fade {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Typing cursor */
+.typing-cursor::after {
+  content: '▋';
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Score ring animation */
+.score-ring {
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Emotion glow */
+.emotion-defensive { box-shadow: 0 0 20px rgba(239, 68, 68, 0.25); }
+.emotion-hurt      { box-shadow: 0 0 20px rgba(251, 146, 60, 0.25); }
+.emotion-guilty    { box-shadow: 0 0 20px rgba(168, 85, 247, 0.25); }
+.emotion-frustrated{ box-shadow: 0 0 20px rgba(234, 179, 8, 0.25); }
+.emotion-calm      { box-shadow: 0 0 20px rgba(34, 197, 94, 0.25); }
+.emotion-confused  { box-shadow: 0 0 20px rgba(99, 102, 241, 0.25); }
+.emotion-apologetic{ box-shadow: 0 0 20px rgba(236, 72, 153, 0.25); }
+.emotion-resistant { box-shadow: 0 0 20px rgba(239, 68, 68, 0.25); }
+.emotion-warming   { box-shadow: 0 0 20px rgba(251, 191, 36, 0.25); }
+.emotion-dismissive{ box-shadow: 0 0 20px rgba(107, 114, 128, 0.25); }
+.emotion-vulnerable{ box-shadow: 0 0 20px rgba(244, 114, 182, 0.25); }

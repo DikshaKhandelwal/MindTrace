@@ -1,0 +1,28 @@
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { simulatorRouter } from './routes/simulator.js';
+import { communityRouter } from './routes/community.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+
+const app = express();
+const PORT = process.env.PORT || 3001;
+
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'],
+  credentials: true,
+}));
+app.use(express.json());
+
+app.use('/api/simulator', simulatorRouter);
+app.use('/api/community', communityRouter);
+
+app.get('/health', (_, res) => res.json({ status: 'ok', module: 'Reality Simulator' }));
+
+app.listen(PORT, () => {
+  console.log(`\n🎭 MindTrace Reality Simulator backend running on http://localhost:${PORT}\n`);
+});
