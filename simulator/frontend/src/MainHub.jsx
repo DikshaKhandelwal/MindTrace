@@ -308,8 +308,8 @@ export default function MainHub({ onEnter }) {
               style={{ fontSize: 'clamp(2rem,5vw,3.6rem)', fontFamily: 'Georgia, serif', letterSpacing: '-0.02em' }}>
               MindTrace
             </h1>
-            <p className="text-[11px] font-mono text-black/45 mt-0.5 italic">
-              Six tools for your inner world — curated &amp; built for real life.
+            <p className="text-[15px] font-mono text-black/50 mt-1 italic">
+              Eight tools for your inner world — curated &amp; built for real life.
             </p>
           </div>
 
@@ -318,7 +318,7 @@ export default function MainHub({ onEnter }) {
             {[
               { val: '24K+', label: 'users' },
               { val: 'GPT-4o', label: 'powered' },
-              { val: '6', label: 'modules' },
+              { val: '8', label: 'modules' },
             ].map(s => (
               <div key={s.label} className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-black font-mono"
                 style={{ border: BLK, background: '#fff', boxShadow: '1.5px 1.5px 0 #111' }}>
@@ -343,10 +343,40 @@ export default function MainHub({ onEnter }) {
       </div>
 
       {/* ── CARD GRID ── */}
-      <div className="px-6 pb-10 max-w-6xl w-full mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 flex-1">
+      <div className="px-6 pb-10 max-w-6xl w-full mx-auto grid grid-cols-2 lg:grid-cols-4 gap-5 flex-1">
         {MODULES.map((mod, i) => (
           <ModuleCard key={mod.id} mod={mod} onEnter={onEnter} idx={i} />
         ))}
+      </div>
+
+      {/* ── THOUGHT CLOUD — above footer, right-aligned ── */}
+      <div className="w-full px-6 flex justify-end pt-6 pb-2">
+        <motion.div
+          className="relative flex flex-col items-end"
+          animate={{ y: [0, -8, 0] }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          <button
+            onClick={() => onEnter('joy')}
+            className="flex items-center gap-2 px-5 py-2.5 text-[11px] font-black font-mono uppercase tracking-widest transition-all text-black"
+            style={{
+              border: BLK,
+              background: '#fce7f3',
+              boxShadow: '2px 2px 0 #111',
+              borderRadius: '999px',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#111'; e.currentTarget.style.color = '#fce7f3'; e.currentTarget.style.boxShadow = 'none'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#fce7f3'; e.currentTarget.style.color = '#111'; e.currentTarget.style.boxShadow = '2px 2px 0 #111'; }}
+          >
+            💗 Need a moment?
+          </button>
+          {/* Thought dots */}
+          <div className="flex flex-col items-end pr-5" style={{ gap: 3, marginTop: 4 }}>
+            <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#fce7f3', border: BLK }} />
+            <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#fce7f3', border: BLK }} />
+            <div style={{ width: 3, height: 3, borderRadius: '50%', background: '#fce7f3', border: BLK }} />
+          </div>
+        </motion.div>
       </div>
 
       {/* ── FOOTER ── */}
@@ -354,21 +384,12 @@ export default function MainHub({ onEnter }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.7 }}
-        className="w-full px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3"
+        className="w-full px-6 py-4 flex items-center justify-center"
         style={{ borderTop: '2px solid #111', background: '#f0ede6' }}
       >
         <p className="text-[10px] font-mono text-black/35">
           All conversations are private. Nothing is identified or stored.
         </p>
-        <button
-          onClick={() => onEnter('joy')}
-          className="flex items-center gap-2 px-4 py-2 text-[11px] font-black font-mono uppercase tracking-widest transition-all text-black"
-          style={{ border: BLK, background: '#fce7f3', boxShadow: '2px 2px 0 #111' }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#111'; e.currentTarget.style.color = '#fce7f3'; e.currentTarget.style.boxShadow = 'none'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = '#fce7f3'; e.currentTarget.style.color = '#111'; e.currentTarget.style.boxShadow = '2px 2px 0 #111'; }}
-        >
-          💗 Need a moment?
-        </button>
       </motion.footer>
 
     </div>

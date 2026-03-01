@@ -2,66 +2,84 @@ import express from 'express';
 import OpenAI from 'openai';
 
 export const mindCafeRouter = express.Router();
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// POST /api/mindcafe/hint
-// Given a customer's dialogue lines, suggest which 2-3 emotional ingredients they need
-mindCafeRouter.post('/hint', async (req, res) => {
-  const { dialogue, role } = req.body;
-  if (!dialogue) return res.status(400).json({ error: 'dialogue required' });
+function getOpenAI() {
+  return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+}
 
-  const VALID = ['calm','energy','kindness','quiet','reassurance','release','connection','warmth'];
+// POST /api/mindcafe/generate
+// Generate a customer's entry hint and 3 dialogue lines dynamically
+mindCafeRouter.post('/generate', async (req, res) => {
+  const { name, role, hint: seedHint, isNight, needs } = req.body;
+  if (!name) return res.status(400).json({ error: 'name required' });
+
+  // Build a sensory drink description to guide GPT's third dialogue line
+  const drinkDesc = needs ? [
+    needs.strength && needs.strength !== 'single' ? `${needs.strength}-shot` : '',
+    needs.milk && needs.milk !== 'black' ? `${needs.milk} milk` : needs.milk === 'black' ? 'black (no milk)' : '',
+    needs.base ? needs.base.replace('_', ' ') : '',
+    needs.sweet && needs.sweet !== 'none' ? `with ${needs.sweet}` : '',
+    needs.finish && needs.finish !== 'plain' ? `topped with ${needs.finish}` : '',
+  ].filter(Boolean).join(' ') : '';
 
   try {
+    const openai = getOpenAI();
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
-      max_tokens: 120,
+      max_tokens: 320,
       response_format: { type: 'json_object' },
       messages: [
         {
           role: 'system',
-          content: `You are a barista who reads emotional states. Given a customer's words, pick 2-3 emotional ingredients they need most.
-Valid ingredients: ${VALID.join(', ')}.
-Return JSON: { "ingredients": ["id1","id2"], "reason": "one short sentence why" }`,
+          content: `You write intimate, minimal dialogue for a cozy mental-health café game.
+A customer arrives. Write:
+- hint: one observational sentence describing how they look/act as they arrive (barista's eyes, present tense, poetic but grounded, under 25 words)
+- dialogues: array of exactly 3 lines the customer says, in order. Each is 1-2 sentences. Honest, quiet, emotionally real. No therapy-speak. No toxic positivity.
+${drinkDesc ? `The third line must subtly hint what kind of drink they need ("${drinkDesc}") using emotion/sensation — never name the drink directly. E.g. "Something gentle today. Nothing loud." or "Strong. Just strong." or "Something warm and a little sweet wouldn't hurt."` : ''}
+${isNight ? 'It is late night — heavier, more tired, more vulnerable.' : ''}
+Return JSON: { "hint": "...", "dialogues": ["...", "...", "..."] }`,
         },
         {
           role: 'user',
-          content: `Customer role: ${role}\nDialogue: "${dialogue}"`,
+          content: `Customer: ${name} — ${role}\nSeed: ${seedHint}`,
         },
       ],
     });
 
     const parsed = JSON.parse(completion.choices[0].message.content);
-    // sanitize
-    parsed.ingredients = (parsed.ingredients || []).filter(i => VALID.includes(i)).slice(0, 3);
-    res.json(parsed);
+    if (!Array.isArray(parsed.dialogues) || parsed.dialogues.length < 3) {
+      throw new Error('Invalid dialogue format');
+    }
+    res.json({ hint: parsed.hint, dialogues: parsed.dialogues.slice(0, 3) });
   } catch (err) {
-    console.error('mindcafe hint error', err.message);
+    console.error('mindcafe generate error', err.message);
     res.status(500).json({ error: err.message });
   }
 });
 
 // POST /api/mindcafe/reaction
-// Given score and brew name, generate a unique customer reaction line
+// Generate a unique customer reaction line knowing their dialogue + the exact drink + match quality
 mindCafeRouter.post('/reaction', async (req, res) => {
-  const { score, brewName, customerName, customerRole } = req.body;
+  const { score, brewName, customerName, customerRole, lastDialogue } = req.body;
 
-  const tone = score >= 0.8 ? 'deeply moved and understood' :
-               score >= 0.5 ? 'slightly soothed but still holding something' :
-               'politely disappointed, still carrying their weight';
+  const tone = score >= 0.60 ? 'deeply understood — this is exactly what they needed'
+             : score >= 0.40 ? 'mostly right, quietly grateful but still a little unsettled'
+             : score >= 0.25 ? 'politely sipping something that misses the mark'
+             : 'gently disappointed, still carrying what they came with';
 
   try {
+    const openai = getOpenAI();
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
-      max_tokens: 80,
+      max_tokens: 60,
       messages: [
         {
           role: 'system',
-          content: 'You write one-sentence emotional reactions for a cozy café game. Keep it under 20 words. No quotes. Pure feeling.',
+          content: 'You write one single sentence (under 18 words) of what a café customer says or feels after receiving their drink. Quiet, real, no clichés. No quotes.',
         },
         {
           role: 'user',
-          content: `${customerName} (${customerRole}) receives "${brewName}". They feel ${tone}. Write their reaction.`,
+          content: `${customerName} (${customerRole}) just said: "${lastDialogue}"\nThey receive: ${brewName}\nThey feel: ${tone}`,
         },
       ],
     });
@@ -80,6 +98,7 @@ mindCafeRouter.post('/spill', async (req, res) => {
   if (!thoughts) return res.status(400).json({ error: 'thoughts required' });
 
   try {
+    const openai = getOpenAI();
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       max_tokens: 120,

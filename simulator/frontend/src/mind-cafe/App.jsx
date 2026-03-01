@@ -1,15 +1,15 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import axios from 'axios';
 import { ArrowLeft, Heart, Star } from 'lucide-react';
 import { CUSTOMERS, SELF_CUSTOMER } from './data/customers.js';
-import { INGREDIENTS, getBrewName, scoreMatch, getReaction } from './data/ingredients.js';
+import { STEPS, getOrderName, scoreOrder, getReaction } from './data/coffee-menu.js';
 import CustomerPanel from './components/CustomerPanel.jsx';
 import BrewStation from './components/BrewStation.jsx';
 import BrewAnimation from './components/BrewAnimation.jsx';
 import SpillMachine from './components/SpillMachine.jsx';
 import MusicPlayer from './components/MusicPlayer.jsx';
 import SoundMixer from './components/SoundMixer.jsx';
-import CafeIllustration from './components/CafeIllustration.jsx';
 import useAmbience from './hooks/useAmbience.js';
 
 function shuffle(arr) {
@@ -32,7 +32,7 @@ export default function MindCafeApp({ onBack }) {
   const [queueIdx, setQueueIdx] = useState(0);
   const [dialogueIdx, setDialogueIdx] = useState(0);
   const [phase, setPhase] = useState(PHASES.ENTRANCE);
-  const [selected, setSelected] = useState([]);
+  const [lastOrder, setLastOrder] = useState(null);
   const [lastScore, setLastScore] = useState(null);
   const [lastReaction, setLastReaction] = useState(null);
   const [lastBrewName, setLastBrewName] = useState('');
@@ -42,45 +42,83 @@ export default function MindCafeApp({ onBack }) {
   const [isNight, setIsNight] = useState(false);
   const [showSpill, setShowSpill] = useState(false);
 
+  // Live GPT content
+  const [liveHint, setLiveHint] = useState(null);
+  const [liveDialogues, setLiveDialogues] = useState(null);
+  const [contentLoading, setContentLoading] = useState(false);
+  const [liveReactionText, setLiveReactionText] = useState('');
+  const [reactionLoading, setReactionLoading] = useState(false);
+  const liveDialoguesRef = useRef(null);
+
   const ambience = useAmbience();
   const customer = phase === PHASES.SELF ? SELF_CUSTOMER : (queue[queueIdx % queue.length] || queue[0]);
 
+  // Derived display values with GPT override + static fallback
+  const displayHint    = (isNight && customer.nightDialogue) ? customer.nightDialogue : (liveHint || customer.hint);
+  const displayDialogues = liveDialogues || customer.dialogues;
+
+  // Fetch GPT-generated hint + dialogues when a new customer arrives
+  useEffect(() => {
+    if (customer.id === 'self') return;
+    let cancelled = false;
+    setLiveHint(null);
+    setLiveDialogues(null);
+    liveDialoguesRef.current = null;
+    setContentLoading(true);
+    axios.post('/api/mindcafe/generate', {
+      name: customer.name, role: customer.role, hint: customer.hint, isNight,
+      needs: customer.needs,
+    }).then(r => {
+      if (cancelled) return;
+      setLiveHint(r.data.hint);
+      setLiveDialogues(r.data.dialogues);
+      liveDialoguesRef.current = r.data.dialogues;
+    }).catch(() => { /* keep static fallback */ })
+      .finally(() => { if (!cancelled) setContentLoading(false); });
+    return () => { cancelled = true; };
+  }, [customer.id, isNight]);
+
   const handleDialogueNext = useCallback(() => {
-    if (dialogueIdx < customer.dialogues.length - 1) {
+    const dialogues = liveDialoguesRef.current || customer.dialogues;
+    if (dialogueIdx < dialogues.length - 1) {
       setDialogueIdx(d => d + 1);
     } else {
       setPhase(PHASES.BREWING);
     }
-  }, [dialogueIdx, customer]);
+  }, [dialogueIdx, customer.dialogues]);
 
-  const toggleIngredient = useCallback((id) => {
-    setSelected(prev => {
-      if (prev.includes(id)) return prev.filter(x => x !== id);
-      if (prev.length >= 3) return prev;
-      return [...prev, id];
-    });
-  }, []);
-
-  const handleServe = useCallback(() => {
-    if (selected.length === 0) return;
-    const brewName = getBrewName(selected);
-    const score = scoreMatch(selected, customer.needs);
+  const handleServe = useCallback((order) => {
+    const brewName = getOrderName(order);
+    const score = scoreOrder(order, customer.needs);
     const reaction = getReaction(score);
+    const dialogues = liveDialoguesRef.current || customer.dialogues;
+    const lastDialogue = dialogues[dialogues.length - 1] || '';
+    setLastOrder(order);
     setLastBrewName(brewName);
     setLastScore(score);
     setLastReaction(reaction);
+    setLiveReactionText('');
+    setReactionLoading(true);
     setPhase(PHASES.ANIMATING);
+    // GPT reaction — runs in parallel with animation
+    axios.post('/api/mindcafe/reaction', {
+      score, brewName,
+      customerName: customer.name,
+      customerRole: customer.role,
+      lastDialogue,
+    }).then(r => setLiveReactionText(r.data.reaction))
+      .catch(() => setLiveReactionText(reaction.text))
+      .finally(() => setReactionLoading(false));
     setTimeout(() => {
       setPhase(PHASES.REACTION);
       setXp(x => x + reaction.xp);
       if (reaction.hearts < 0) setPlayerHearts(h => Math.max(0, h + reaction.hearts));
     }, 2200);
-  }, [selected, customer]);
+  }, [customer]);
 
   const handleNext = useCallback(() => {
     const nextServed = totalServed + 1;
     setTotalServed(nextServed);
-    setSelected([]);
     setDialogueIdx(0);
     setLastScore(null);
     setLastReaction(null);
@@ -100,12 +138,8 @@ export default function MindCafeApp({ onBack }) {
   }, [totalServed, playerHearts, phase]);
 
   return (
-    <div className="min-h-screen flex flex-col"
-      style={{
-        background: isNight ? '#e5d4b8' : '#f5ead8',
-        transition: 'background 2s ease',
-        fontFamily: "Georgia, 'Times New Roman', serif",
-      }}>
+    <div className={`cafe-bg flex flex-col${isNight ? ' night' : ''}`}
+      style={{ transition: 'background 2s ease' }}>
 
       {/* ── Top bar ── */}
       <div className="flex items-center justify-between px-6 py-3 shrink-0"
@@ -150,14 +184,8 @@ export default function MindCafeApp({ onBack }) {
           <MusicPlayer />
         </div>
 
-        {/* CENTER — Illustration + game */}
-        <div className="flex-1 flex flex-col items-center overflow-y-auto">
-
-          {/* Line art illustration */}
-          <div className="w-full max-w-lg px-6 pt-6"
-            style={{ opacity: phase === PHASES.ENTRANCE ? 1 : 0.3, transition: 'opacity 0.8s' }}>
-            <CafeIllustration isNight={isNight} />
-          </div>
+        {/* CENTER — game */}
+        <div className="flex-1 flex flex-col items-end overflow-y-auto pr-8">
 
           {/* Night overlay */}
           <AnimatePresence>
@@ -186,13 +214,15 @@ export default function MindCafeApp({ onBack }) {
                   initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                   transition={{ duration: 0.6 }} className="text-center">
                   <div className="inline-block w-full px-6 py-5"
-                    style={{ background: 'rgba(255,255,255,0.58)', border: '1px solid rgba(92,60,30,0.2)' }}>
+                    style={{ background: 'transparent', border: 'none' }}>
                     <div className="text-5xl mb-3">{customer.avatar}</div>
                     <p className="font-bold text-base mb-0.5" style={{ color: INK }}>{customer.name}</p>
                     <p className="text-xs italic mb-4" style={{ color: MUTED }}>{customer.role}</p>
                     <p className="text-sm italic leading-relaxed mb-5 text-left"
                       style={{ color: '#6b4c30', borderLeft: '2px solid rgba(92,60,30,0.25)', paddingLeft: 12 }}>
-                      {isNight && customer.nightDialogue ? customer.nightDialogue : customer.hint}
+                      {contentLoading ? (
+                        <span style={{ opacity: 0.4 }}>{customer.hint}</span>
+                      ) : displayHint}
                     </p>
                     <button onClick={() => setPhase(PHASES.DIALOGUE)}
                       className="px-6 py-2.5 text-xs transition-all"
@@ -205,20 +235,19 @@ export default function MindCafeApp({ onBack }) {
 
               {/* DIALOGUE */}
               {phase === PHASES.DIALOGUE && (
-                <CustomerPanel key="dialogue" customer={customer} dialogueIdx={dialogueIdx}
+                <CustomerPanel key="dialogue" customer={{ ...customer, dialogues: displayDialogues }} dialogueIdx={dialogueIdx}
                   isNight={isNight} onNext={handleDialogueNext} />
               )}
 
               {/* BREWING */}
               {phase === PHASES.BREWING && (
-                <BrewStation key="brewing" customer={customer} selected={selected}
-                  onToggle={toggleIngredient} onServe={handleServe}
-                  ingredients={INGREDIENTS} isSelf={customer.id === 'self'} />
+                <BrewStation key="brewing" customer={customer}
+                  onServe={handleServe} isSelf={customer.id === 'self'} />
               )}
 
               {/* ANIMATING */}
               {phase === PHASES.ANIMATING && (
-                <BrewAnimation key="animating" selected={selected} brewName={lastBrewName} ingredients={INGREDIENTS} />
+                <BrewAnimation key="animating" order={lastOrder} brewName={lastBrewName} steps={STEPS} />
               )}
 
               {/* REACTION */}
@@ -236,7 +265,10 @@ export default function MindCafeApp({ onBack }) {
                       <p className="text-xs font-bold uppercase tracking-wider mb-1.5"
                         style={{ color: lastReaction.border, fontFamily: 'monospace' }}>{lastReaction.label}</p>
                       <p className="text-sm italic leading-relaxed" style={{ color: '#4a2c10' }}>
-                        "{lastReaction.text}"
+                        {reactionLoading && !liveReactionText
+                          ? <span style={{ opacity: 0.45 }}>…</span>
+                          : `"${liveReactionText || lastReaction.text}"`
+                        }
                       </p>
                     </div>
                     <div className="flex items-center gap-2 mb-4 mx-auto max-w-xs">

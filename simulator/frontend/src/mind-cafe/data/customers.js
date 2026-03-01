@@ -10,7 +10,7 @@ export const CUSTOMERS = [
       "I know it is probably fine. I just can't convince myself of that.",
       "Do you have anything to quiet the noise?",
     ],
-    needs: ['calm', 'reassurance'],
+    needs: { base: 'matcha', milk: 'oat', strength: 'half', sweet: 'honey', finish: 'foam' },
     nightDialogue: "I haven't slept properly in weeks. Every time I close my eyes the thoughts just… amplify.",
   },
   {
@@ -24,7 +24,7 @@ export const CUSTOMERS = [
       "I'm fine. I think. I don't know what fine feels like anymore.",
       "Just give me something warm.",
     ],
-    needs: ['warmth', 'release'],
+    needs: { base: 'americano', milk: 'black', strength: 'double', sweet: 'none', finish: 'plain' },
     nightDialogue: "I submitted something today. I don't even remember what it was. I've been running on empty for so long I forgot what full felt like.",
   },
   {
@@ -38,7 +38,7 @@ export const CUSTOMERS = [
       "My friend moved away last month. We keep saying we'll video call but…",
       "Do you have anything warm? Not just the temperature kind.",
     ],
-    needs: ['connection', 'kindness'],
+    needs: { base: 'chai', milk: 'cream', strength: 'single', sweet: 'honey', finish: 'cinnamon' },
     nightDialogue: "It's weird how loud quiet gets after a while. I just wanted to be somewhere with other people, even if we don't talk.",
   },
   {
@@ -52,7 +52,7 @@ export const CUSTOMERS = [
       "What if I put it out there and everyone just… doesn't get it. Or worse, they do.",
       "I need something to either push me forward, or tell me it's okay to rest.",
     ],
-    needs: ['reassurance', 'energy'],
+    needs: { base: 'matcha', milk: 'almond', strength: 'single', sweet: 'syrup', finish: 'foam' },
     nightDialogue: "I almost published something tonight. Closed the tab three times. Still there in another window, waiting.",
   },
   {
@@ -66,7 +66,7 @@ export const CUSTOMERS = [
       "People keep asking how I am. I don't know what to say.",
       "I just want to sit here for a bit. If that's okay.",
     ],
-    needs: ['quiet', 'warmth', 'release'],
+    needs: { base: 'latte', milk: 'cream', strength: 'half', sweet: 'honey', finish: 'plain' },
     nightDialogue: "I found an old voicemail tonight. I couldn't delete it. I couldn't play it either. I just sat with it.",
   },
   {
@@ -80,7 +80,7 @@ export const CUSTOMERS = [
       "I just need twenty minutes where someone else's needs aren't the loudest thing in the room.",
       "I don't even know what I want. Something that tastes like… mine.",
     ],
-    needs: ['release', 'quiet', 'calm'],
+    needs: { base: 'cold_brew', milk: 'oat', strength: 'double', sweet: 'none', finish: 'iced' },
     nightDialogue: "They finally fell asleep. The house is quiet and I don't know what to do with quiet anymore.",
   },
 ];
@@ -96,5 +96,5 @@ export const SELF_CUSTOMER = {
     "The café is still. Just you and the rain on the window.",
     "What do you actually need right now?",
   ],
-  needs: [],
+  needs: { base: 'latte', milk: 'oat', strength: 'single', sweet: 'honey', finish: 'foam' },
 };

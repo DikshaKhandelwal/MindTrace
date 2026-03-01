@@ -1,7 +1,13 @@
 import { motion } from 'framer-motion';
 
-export default function BrewAnimation({ selected, brewName, ingredients }) {
-  const layers = selected.map(id => ingredients.find(i => i.id === id)).filter(Boolean);
+const INK  = '#2c1a0e';
+const MUTED = '#9a7a62';
+
+export default function BrewAnimation({ order, brewName, steps }) {
+  const lines = (steps || []).map(s => {
+    const chosen = s.options.find(o => o.id === order?.[s.id]);
+    return chosen ? { emoji: chosen.emoji, label: chosen.label, step: s.label } : null;
+  }).filter(Boolean);
 
   return (
     <motion.div
@@ -15,34 +21,22 @@ export default function BrewAnimation({ selected, brewName, ingredients }) {
       </p>
 
       {/* Cup */}
-      <div className="relative" style={{ width: 100, height: 130 }}>
-        {/* Cup outline */}
-        <svg width="100" height="130" viewBox="0 0 100 130" fill="none" className="absolute inset-0">
-          {/* Cup body */}
-          <path d="M15 20 L8 115 Q8 122 18 122 L82 122 Q92 122 92 115 L85 20 Z"
+      <div className="relative" style={{ width: 80, height: 108 }}>
+        <svg width="80" height="108" viewBox="0 0 80 108" fill="none">
+          <path d="M12 16 L6 95 Q6 103 16 103 L64 103 Q74 103 74 95 L68 16 Z"
             fill="#f5ead8" stroke="rgba(92,60,30,0.45)" strokeWidth="1.5" />
-          {/* Handle */}
-          <path d="M85 45 Q108 45 108 65 Q108 85 85 85"
-            fill="none" stroke="rgba(92,60,30,0.4)" strokeWidth="2" />
-          {/* Rim */}
-          <ellipse cx="50" cy="20" rx="35" ry="6" fill="#ecdcc8" stroke="rgba(92,60,30,0.45)" strokeWidth="1.5" />
+          <path d="M68 36 Q86 36 86 52 Q86 68 68 68"
+            fill="none" stroke="rgba(92,60,30,0.4)" strokeWidth="1.5" />
+          <ellipse cx="40" cy="16" rx="28" ry="5" fill="#ecdcc8" stroke="rgba(92,60,30,0.45)" strokeWidth="1.5" />
         </svg>
-
-        {/* Liquid layers */}
         <div className="absolute overflow-hidden"
-          style={{ left: 16, top: 24, width: 68, height: 88, borderRadius: '0 0 12px 12px' }}>
-          {layers.map((ing, i) => (
-            <motion.div
-              key={ing.id}
-              initial={{ height: 0 }}
-              animate={{ height: `${100 / layers.length}%` }}
-              transition={{ duration: 0.7, delay: i * 0.45, ease: 'easeInOut' }}
-              style={{
-                background: `linear-gradient(to bottom, ${ing.color}cc, ${ing.color}88)`,
-                width: '100%',
-              }}
-            />
-          ))}
+          style={{ left: 13, top: 19, width: 54, height: 74, borderRadius: '0 0 10px 10px' }}>
+          <motion.div
+            initial={{ height: 0 }}
+            animate={{ height: '100%' }}
+            transition={{ duration: 1.6, ease: 'easeInOut' }}
+            style={{ background: 'linear-gradient(to bottom, #c8894a, #8b5e38)', width: '100%' }}
+          />
         </div>
 
         {/* Steam */}
@@ -65,20 +59,36 @@ export default function BrewAnimation({ selected, brewName, ingredients }) {
         ))}
       </div>
 
-      {/* Brew name reveal */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
+      {/* Order receipt */}
+      <div className="w-full max-w-xs px-4 py-3"
+        style={{ background: 'rgba(255,255,255,0.62)', border: '1px solid rgba(92,60,30,0.15)' }}>
+        {lines.map((line, i) => (
+          <motion.div key={i}
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.25 + i * 0.2, duration: 0.3 }}
+            className="flex items-center gap-2.5 py-1.5"
+            style={{ borderBottom: i < lines.length - 1 ? '1px solid rgba(92,60,30,0.08)' : 'none' }}
+          >
+            <span className="text-base shrink-0">{line.emoji}</span>
+            <div>
+              <p className="text-[9px] uppercase tracking-wider" style={{ color: MUTED, fontFamily: 'monospace' }}>{line.step}</p>
+              <p className="text-sm font-bold" style={{ color: INK, fontFamily: 'Georgia, serif' }}>{line.label}</p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Brew name */}
+      <motion.p
+        initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.2, duration: 0.6 }}
-        className="text-center"
+        transition={{ delay: 0.25 + lines.length * 0.2 + 0.3, duration: 0.5 }}
+        className="font-serif text-lg text-center"
+        style={{ color: INK }}
       >
-        <p className="font-serif text-xl mb-1" style={{ color: '#2c1a0e' }}>{brewName}</p>
-        <div className="flex justify-center gap-2 mt-2">
-          {layers.map(ing => (
-            <span key={ing.id} className="text-lg">{ing.emoji}</span>
-          ))}
-        </div>
-      </motion.div>
+        {brewName}
+      </motion.p>
 
       {/* Pulse indicator */}
       <div className="flex gap-1.5">

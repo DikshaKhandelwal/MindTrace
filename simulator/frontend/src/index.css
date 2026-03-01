@@ -357,8 +357,12 @@
 /* Mind Café */
 .cafe-bg {
   min-height: 100vh;
-  background: linear-gradient(160deg, #1c0d00 0%, #2d1600 40%, #1a0a00 100%);
+  background: url('/cafe_bg2.png') left center / cover no-repeat fixed;
   font-family: 'Georgia', serif;
+}
+.cafe-bg.night {
+  background: url('/cafe_bg.jpg') left center / cover no-repeat fixed;
+  filter: brightness(0.88) sepia(0.12);
 }
 .cafe-bg * { box-sizing: border-box; }
 .emotion-warming   { box-shadow: 0 0 20px rgba(251, 191, 36, 0.25); }
