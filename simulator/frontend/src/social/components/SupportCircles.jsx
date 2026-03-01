@@ -1,4 +1,6 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import axios from 'axios';
 import { CIRCLES } from '../data/circles';
 
 const container = {
@@ -11,6 +13,14 @@ const item = {
 };
 
 export default function SupportCircles({ go }) {
+  const [stats, setStats] = useState({});
+
+  useEffect(() => {
+    axios.get('/api/community/circle-stats')
+      .then(r => setStats(r.data))
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <h2 className="text-2xl font-bold text-stone-800 mb-1">Support Circles</h2>
@@ -24,13 +34,16 @@ export default function SupportCircles({ go }) {
       >
         {CIRCLES.map(circle => {
           const Icon = circle.icon;
+          const live = stats[circle.category];
+          const postCount = live?.posts ?? 0;
+          const todayCount = live?.today ?? circle.activeToday;
           return (
             <motion.button
               key={circle.id}
               variants={item}
               whileHover={{ y: -4, transition: { duration: 0.18 } }}
               whileTap={{ scale: 0.97 }}
-              onClick={() => go('circle', { circle })}
+              onClick={() => go('circle', { circle: { ...circle, liveToday: todayCount } })}
               className="circle-card glass-card p-5 text-left group"
             >
               <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-3 ${circle.accentBg}`}>
@@ -43,10 +56,14 @@ export default function SupportCircles({ go }) {
               <div className="text-xs text-stone-500 leading-relaxed mb-4">{circle.tagline}</div>
 
               <div className="flex items-center justify-between text-xs text-stone-400">
-                <span>{circle.members.toLocaleString()} members</span>
+                <span>
+                  {postCount > 0
+                    ? `${postCount} post${postCount !== 1 ? 's' : ''}`
+                    : `${circle.members.toLocaleString()} members`}
+                </span>
                 <span className="flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
-                  {circle.activeToday} today
+                  {todayCount} today
                 </span>
               </div>
             </motion.button>

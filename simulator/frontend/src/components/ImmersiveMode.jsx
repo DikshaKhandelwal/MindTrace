@@ -8,7 +8,7 @@ export default function ImmersiveMode({ scenarioData, history, setHistory, onFee
   const { scenario, persona, openingMessage } = scenarioData;
 
   // ── State ──────────────────────────────────────────────────
-  const [roomType, setRoomType] = useState(null);        // loaded async
+  const [roomType, setRoomType] = useState(null);
   const [ttsVoice, setTtsVoice] = useState('nova');
   const [loading, setLoading] = useState(true);
   const [subtitle, setSubtitle] = useState('');

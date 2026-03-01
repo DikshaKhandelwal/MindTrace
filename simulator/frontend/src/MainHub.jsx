@@ -1,258 +1,376 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Brain, Users, Heart, Zap, ActivitySquare, ArrowRight, Sparkles, Shield, Activity, Moon } from 'lucide-react';
+import { Brain, Users, Heart, Zap, ActivitySquare, Moon, Flame, Coffee, ChevronRight, Check } from 'lucide-react';
 
+// ── Pastel + black-outline newspaper palette ──────────────────────────────────
 const MODULES = [
   {
     id: 'simulator',
-    badge: 'Module 01',
+    num: '01',
     title: 'Reality Simulator',
-    subtitle: 'Practice real conversations in a safe space',
-    description:
-      'AI-powered social scenario training. Step into realistic situations — job interviews, conflict resolution, difficult conversations — and build confidence through practice.',
+    subtitle: '"Practice before the real thing"',
+    accent: '#16a34a',          // deep green text accent
+    pastel: '#d1fae5',          // mint card fill
+    stripe: '#bbf7d0',          // slightly darker for header stripe
     Icon: Brain,
-    gradient: 'from-sage-500 to-emerald-600',
-    glow: 'rgba(61,138,99,0.35)',
-    features: ['12 scenario types', '3D immersive mode', 'AI feedback reports', 'Adaptive personas'],
-    bg: 'from-sage-900/40 to-sage-800/20',
-    border: 'border-sage-400/30',
-    dotColor: 'bg-sage-400',
+    features: [
+      { label: '12 scenario types',   done: true  },
+      { label: '3D immersive mode',   done: false },
+      { label: 'AI feedback reports', done: true  },
+      { label: 'Adaptive personas',   done: false },
+    ],
     cta: 'Start Practicing',
   },
   {
     id: 'social',
-    badge: 'Module 02',
+    num: '02',
     title: 'Social Connect',
-    subtitle: 'Community support for mental health',
-    description:
-      'An anonymous, judgment-free community where real people share what they\'re carrying. Support circles, daily check-ins, a vent space, and crisis resources.',
+    subtitle: '"You are not alone in this"',
+    accent: '#b45309',
+    pastel: '#fef9c3',
+    stripe: '#fde68a',
     Icon: Users,
-    gradient: 'from-amber-500 to-orange-500',
-    glow: 'rgba(245,158,11,0.3)',
-    features: ['Anonymous posting', 'Support circles', 'AI compassion', 'Crisis resources'],
-    bg: 'from-amber-900/40 to-orange-900/20',
-    border: 'border-amber-400/30',
-    dotColor: 'bg-amber-400',
+    features: [
+      { label: 'Anonymous posting', done: true  },
+      { label: 'Support circles',   done: false },
+      { label: 'AI compassion',     done: true  },
+      { label: 'Crisis resources',  done: false },
+    ],
     cta: 'Join Community',
   },
   {
     id: 'inner-circle',
-    badge: 'Module 03',
+    num: '03',
     title: 'Inner Circle',
-    subtitle: 'Private intelligent support network',
-    description:
-      'A curated trust network for people you actually care about. Emotional states, smart check-ins, guided support, and the patterns that make relationships stronger.',
+    subtitle: '"Five people. Maximum trust."',
+    accent: '#6d28d9',
+    pastel: '#ede9fe',
+    stripe: '#ddd6fe',
     Icon: Heart,
-    gradient: 'from-violet-500 to-indigo-600',
-    glow: 'rgba(139,92,246,0.3)',
-    features: ['Max 5 people', 'Mood network graph', 'Tone guard', 'Behavior insights'],
-    bg: 'from-violet-900/40 to-indigo-900/20',
-    border: 'border-violet-400/30',
-    dotColor: 'bg-violet-400',
+    features: [
+      { label: 'Max 5 people',       done: true  },
+      { label: 'Mood network graph', done: false },
+      { label: 'Tone guard',         done: true  },
+      { label: 'Behavior insights',  done: false },
+    ],
     cta: 'Enter Your Circle',
   },
   {
+    id: 'clarity-engine',
+    num: '04',
+    title: 'Clarity Engine',
+    subtitle: '"Map it, break it, clear it."',
+    accent: '#be185d',
+    pastel: '#fce7f3',
+    stripe: '#fbcfe8',
+    Icon: Zap,
+    features: [
+      { label: 'Thought graph',      done: true  },
+      { label: 'Loop detector',      done: false },
+      { label: 'Bias scanner',       done: true  },
+      { label: 'Regret simulation',  done: false },
+    ],
+    cta: 'Debug My Thinking',
+  },
+  {
     id: 'mind-check',
-    badge: 'Module 05',
+    num: '05',
     title: 'Mind Check',
-    subtitle: 'A signal — not a diagnosis',
-    description:
-      'Ten real-life scenarios. Your honest reactions. In 5 minutes, find out whether what you\'re carrying is normal weight or a signal worth taking seriously — and what kind of support might actually help.',
+    subtitle: '"A signal — not a diagnosis."',
+    accent: '#334155',
+    pastel: '#f1f5f9',
+    stripe: '#e2e8f0',
     Icon: ActivitySquare,
-    gradient: 'from-stone-400 to-stone-600',
-    glow: 'rgba(168,162,158,0.30)',
-    features: ['10 scenarios', 'No right answers', 'Signal not score', 'Professional guidance'],
-    bg: 'from-stone-800/40 to-stone-900/30',
-    border: 'border-stone-400/25',
-    dotColor: 'bg-stone-400',
+    features: [
+      { label: '10 real scenarios',     done: true  },
+      { label: 'No right answers',      done: false },
+      { label: 'Signal, not score',     done: true  },
+      { label: 'Professional guidance', done: false },
+    ],
     cta: 'Check Your Signal',
   },
-  
   {
     id: 'sleep-guardian',
-    badge: 'Module 06',
+    num: '06',
     title: 'Sleep Guardian',
-    subtitle: 'Luna watches over your nights',
-    description:
-      'Track caffeine timing, bedtime habits, and screen-off patterns. Luna — your sleepy ghost companion — reacts to your sleep health and earns Moon Cookies for good nights.',
+    subtitle: '"Luna watches over your nights."',
+    accent: '#3730a3',
+    pastel: '#e0e7ff',
+    stripe: '#c7d2fe',
     Icon: Moon,
-    gradient: 'from-indigo-500 to-violet-700',
-    glow: 'rgba(99,79,220,0.35)',
-    features: ['Ghost mood tracker', 'Caffeine half-life', 'Moon Cookies', 'Streak rewards'],
-    bg: 'from-indigo-900/50 to-violet-900/30',
-    border: 'border-indigo-400/30',
-    dotColor: 'bg-indigo-400',
+    features: [
+      { label: 'Ghost mood tracker', done: true  },
+      { label: 'Caffeine half-life', done: false },
+      { label: 'Moon Cookies',       done: true  },
+      { label: 'AI sleep story',     done: false },
+    ],
     cta: 'Ask Luna',
   },
   {
-    id: 'clarity-engine',
-    badge: 'Module 04',
-    title: 'Clarity Engine',
-    subtitle: 'Cognitive Debugger — map, challenge, and rewire your thinking',
-    description:
-      'A system that visualizes your thinking as a live graph, detects fear loops and cognitive biases, simulates future paths, and guides you from overthinking to clear, confident decisions.',
-    Icon: Zap,
-    gradient: 'from-pink-500 to-purple-500',
-    glow: 'rgba(236,72,153,0.30)',
-    features: ['Thought graph', 'Loop detector', 'Bias scanner', 'Regret simulation'],
-    bg: 'from-pink-900/40 to-purple-900/20',
-    border: 'border-pink-400/30',
-    dotColor: 'bg-pink-400',
-    cta: 'Debug My Thinking',
+    id: 'burnout-detector',
+    num: '07',
+    title: 'Burnout Detector',
+    subtitle: '"Your code knows before you do."',
+    accent: '#c2410c',
+    pastel: '#fff7ed',
+    stripe: '#fed7aa',
+    Icon: Flame,
+    features: [
+      { label: 'Real git commit analysis', done: true  },
+      { label: 'Live typing speed monitor', done: true  },
+      { label: '30-day signal heatmap',     done: true  },
+      { label: 'GPT burnout report',        done: true  },
+    ],
+    cta: 'Detect My Burnout',
+  },
+  {
+    id: 'mind-cafe',
+    num: '08',
+    title: 'Mind Café',
+    subtitle: '"Every cup tells a story."',
+    accent: '#92400e',
+    pastel: '#fef3c7',
+    stripe: '#fde68a',
+    Icon: Coffee,
+    features: [
+      { label: 'Emotional brew system',   done: true  },
+      { label: '6 story customers',       done: true  },
+      { label: 'Night mode & self-brew',  done: true  },
+      { label: 'Spill Your Thoughts',     done: true  },
+    ],
+    cta: 'Open the Café',
   },
 ];
 
-const STATS = [
-  { label: 'Active Users', value: '24K+', Icon: Activity },
-  { label: 'Privacy First', value: '100%', Icon: Shield },
-  { label: 'AI-Powered', value: 'GPT-4o', Icon: Sparkles },
+const TICKER_ITEMS = [
+  'The brain generates about 70,000 thoughts per day',
+  'Sleep is when your brain clears toxins — priority, not luxury',
+  'Anxiety affects 284 million people worldwide',
+  'Social connection is as important to health as diet and exercise',
+  'Cognitive biases affect every decision you make — even this one',
+  'You can rewire your brain at any age. Neuroplasticity is real.',
+  'Breathing deeply for 60 seconds lowers cortisol measurably',
+  'Naming an emotion reduces its intensity by up to 50%',
+  'The average person spends 6.5 years of their life dreaming',
 ];
 
-const container = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.12 } },
-};
-const item = {
-  hidden: { opacity: 0, y: 32 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.5 } },
-};
+// ── Live clock ────────────────────────────────────────────────────────────────
+function LiveClock() {
+  const [time, setTime] = useState(() =>
+    new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+  );
+  useEffect(() => {
+    const id = setInterval(() =>
+      setTime(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }))
+    , 10000);
+    return () => clearInterval(id);
+  }, []);
+  return <span>{time}</span>;
+}
 
-export default function MainHub({ onEnter }) {
+// ── Ticker ────────────────────────────────────────────────────────────────────
+function Ticker() {
+  const text = TICKER_ITEMS.join('   ✦   ') + '   ✦   ';
   return (
-    <div className="hub-bg min-h-screen flex flex-col items-center px-4 py-12">
-      {/* Header */}
+    <div className="overflow-hidden w-full py-2 select-none"
+      style={{ background: '#111', borderBottom: '2px solid #111' }}>
       <motion.div
-        initial={{ opacity: 0, y: -16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="flex items-center gap-2 mb-2"
+        className="flex whitespace-nowrap"
+        animate={{ x: [0, '-50%'] }}
+        transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
       >
-        <span className="text-xs font-semibold tracking-widest text-sage-400 uppercase">MindTrace</span>
+        {[text, text].map((t, i) => (
+          <span key={i} className="text-[10px] font-black uppercase tracking-widest text-white/80 px-4">{t}</span>
+        ))}
       </motion.div>
+    </div>
+  );
+}
 
-      <motion.h1
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.55, delay: 0.1 }}
-        className="font-serif font-black text-center mb-4 leading-none"
-        style={{ fontSize: 'clamp(3rem, 7vw, 5.5rem)', letterSpacing: '-0.02em' }}
-      >
-        <span className="text-white">Your mind,</span>{' '}
-        <span className="bg-gradient-to-r from-sage-400 via-teal-300 to-amber-300 bg-clip-text text-transparent italic">
-          supported.
-        </span>
-      </motion.h1>
+// ── Module card ───────────────────────────────────────────────────────────────
+function ModuleCard({ mod, onEnter, idx }) {
+  const [hovered, setHovered] = useState(null);
+  const BLK = '2px solid #111';
 
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="text-stone-400 text-center max-w-xl mb-3 text-base leading-relaxed"
-      >
-        Two tools, one platform — built to help you communicate better and feel less alone.
-      </motion.p>
-
-      {/* Stats row */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className="flex gap-6 mb-12 flex-wrap justify-center"
-      >
-        {STATS.map(({ label, value, Icon }) => (
-          <div key={label} className="flex items-center gap-2 text-stone-400 text-sm">
-            <Icon size={14} className="text-sage-400" />
-            <span className="font-semibold text-white/80">{value}</span>
-            <span>{label}</span>
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: idx * 0.06 }}
+      className="flex flex-col overflow-hidden"
+      style={{
+        background: mod.pastel,
+        border: BLK,
+        boxShadow: '3px 3px 0 #111',
+      }}
+    >
+      {/* Stripe header */}
+      <div className="px-4 pt-4 pb-3 flex items-start justify-between gap-2"
+        style={{ background: mod.stripe, borderBottom: BLK }}>
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[9px] font-black font-mono uppercase tracking-widest text-black/50">
+              Module {mod.num}
+            </span>
+            {/* Count chip */}
+            <span className="px-1.5 py-0.5 text-[9px] font-black text-white leading-none"
+              style={{ background: '#111' }}>
+              {mod.features.length}
+            </span>
           </div>
-        ))}
-      </motion.div>
+          <h2 className="font-black text-xl leading-tight tracking-tight text-black"
+            style={{ fontFamily: 'Georgia, serif' }}>
+            {mod.title}
+          </h2>
+          <p className="text-[11px] italic mt-0.5" style={{ color: mod.accent }}>{mod.subtitle}</p>
+        </div>
+        <div className="shrink-0 w-9 h-9 flex items-center justify-center"
+          style={{ background: '#fff', border: BLK }}>
+          <mod.Icon size={17} style={{ color: mod.accent }} />
+        </div>
+      </div>
 
-      {/* Module cards */}
-      <motion.div
-        variants={container}
-        initial="hidden"
-        animate="show"
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl"
+      {/* Numbered list */}
+      <div className="flex-1">
+        {mod.features.map((f, i) => (
+          <button key={f.label}
+            onClick={() => onEnter(mod.id)}
+            onMouseEnter={() => setHovered(i)}
+            onMouseLeave={() => setHovered(null)}
+            className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors"
+            style={{
+              borderBottom: i < mod.features.length - 1 ? '1px solid rgba(0,0,0,0.12)' : 'none',
+              background: hovered === i ? 'rgba(0,0,0,0.05)' : 'transparent',
+            }}>
+            <span className="w-5 shrink-0 text-[10px] font-black font-mono tabular-nums"
+              style={{ color: f.done ? mod.accent : 'rgba(0,0,0,0.25)' }}>
+              {f.done
+                ? <Check size={11} strokeWidth={3} style={{ color: mod.accent }} />
+                : `${String(i + 1).padStart(2,'0')}.`}
+            </span>
+            <span className="flex-1 text-xs font-mono text-black/70"
+              style={{ color: hovered === i ? '#111' : undefined }}>
+              {f.label}
+            </span>
+            <ChevronRight size={11}
+              style={{ color: hovered === i ? mod.accent : 'rgba(0,0,0,0.20)' }} />
+          </button>
+        ))}
+      </div>
+
+      {/* CTA */}
+      <button
+        onClick={() => onEnter(mod.id)}
+        className="w-full py-2.5 font-black text-[11px] font-mono uppercase tracking-widest transition-all text-black"
+        style={{
+          borderTop: BLK,
+          background: hovered !== null ? mod.stripe : 'transparent',
+          letterSpacing: '0.1em',
+        }}
+        onMouseEnter={e => { e.currentTarget.style.background = '#111'; e.currentTarget.style.color = '#fff'; }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#111'; }}
       >
-        {MODULES.map(({ id, badge, title, subtitle, description, Icon, gradient, glow, features, bg, border, dotColor, cta }) => (
-          <motion.div
-            key={id}
-            variants={item}
-            whileHover={{ y: -6, transition: { duration: 0.2 } }}
-            className={`relative rounded-3xl border ${border} bg-gradient-to-br ${bg} backdrop-blur-xl overflow-hidden group cursor-pointer`}
-            style={{ boxShadow: `0 0 0 1px ${border}` }}
-            onClick={() => onEnter(id)}
-          >
-            {/* Glow on hover */}
-            <div
-              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none rounded-3xl"
-              style={{ boxShadow: `0 0 60px ${glow}` }}
-            />
+        {mod.cta} →
+      </button>
+    </motion.div>
+  );
+}
 
-            <div className="p-7 relative z-10">
-              {/* Badge + icon */}
-              <div className="flex items-center justify-between mb-5">
-                <span className="text-xs font-bold tracking-widest text-white/40 uppercase">{badge}</span>
-                <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-lg`}>
-                  <Icon size={22} className="text-white" />
-                </div>
+// ── Main ──────────────────────────────────────────────────────────────────────
+export default function MainHub({ onEnter }) {
+  const BLK = '2px solid #111';
+
+  return (
+    <div className="hub-bg min-h-screen flex flex-col">
+
+      {/* ── MASTHEAD ── */}
+      <motion.header
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.35 }}
+        className="w-full"
+        style={{ borderBottom: '3px solid #111', background: '#faf7f2' }}
+      >
+        {/* Top bar — date + tagline */}
+        <div className="flex items-center justify-between px-6 py-1.5 text-[10px] font-mono text-black/40 uppercase tracking-widest"
+          style={{ borderBottom: '1px solid rgba(0,0,0,0.12)' }}>
+          <span>Est. 2025 · MindTrace Mental Toolkit</span>
+          <span className="flex items-center gap-2">
+            <LiveClock />
+            <span>· March 2026</span>
+          </span>
+        </div>
+
+        {/* Logo row */}
+        <div className="flex items-center justify-between px-6 py-4 gap-4">
+          <div>
+            <h1 className="font-black text-black leading-none"
+              style={{ fontSize: 'clamp(2rem,5vw,3.6rem)', fontFamily: 'Georgia, serif', letterSpacing: '-0.02em' }}>
+              MindTrace
+            </h1>
+            <p className="text-[11px] font-mono text-black/45 mt-0.5 italic">
+              Six tools for your inner world — curated &amp; built for real life.
+            </p>
+          </div>
+
+          {/* Stat chips — right side */}
+          <div className="hidden sm:flex flex-col gap-1.5 items-end shrink-0">
+            {[
+              { val: '24K+', label: 'users' },
+              { val: 'GPT-4o', label: 'powered' },
+              { val: '6', label: 'modules' },
+            ].map(s => (
+              <div key={s.label} className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-black font-mono"
+                style={{ border: BLK, background: '#fff', boxShadow: '1.5px 1.5px 0 #111' }}>
+                <span className="text-black">{s.val}</span>
+                <span className="text-black/40 font-normal">{s.label}</span>
               </div>
+            ))}
+          </div>
+        </div>
+      </motion.header>
 
-              <h2 className="font-serif font-black text-2xl text-white mb-1">{title}</h2>
-              <p className="font-mono text-xs font-medium text-white/45 mb-3">{subtitle}</p>
-              <p className="text-sm text-white/60 leading-relaxed mb-6">{description}</p>
+      {/* ── TICKER ── */}
+      <Ticker />
 
-              {/* Feature pills */}
-              <div className="flex flex-wrap gap-2 mb-6">
-                {features.map(f => (
-                  <span key={f} className="flex items-center gap-1 text-xs text-white/50 bg-white/5 border border-white/10 rounded-full px-3 py-1">
-                    <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`} />
-                    {f}
-                  </span>
-                ))}
-              </div>
+      {/* ── SECTION LABEL ── */}
+      <div className="px-6 pt-6 pb-3 max-w-6xl w-full mx-auto flex items-center gap-4">
+        <span className="text-[10px] font-black font-mono uppercase tracking-[0.2em] text-black/40">
+          All Modules
+        </span>
+        <div className="flex-1 h-px bg-black/15" />
+        <span className="text-[10px] font-mono text-black/30 italic">tap any row to enter</span>
+      </div>
 
-              {/* CTA */}
-              <button
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r ${gradient} text-white text-sm font-semibold shadow-lg hover:opacity-90 transition-opacity`}
-              >
-                {cta}
-                <ArrowRight size={15} />
-              </button>
-            </div>
-          </motion.div>
+      {/* ── CARD GRID ── */}
+      <div className="px-6 pb-10 max-w-6xl w-full mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 flex-1">
+        {MODULES.map((mod, i) => (
+          <ModuleCard key={mod.id} mod={mod} onEnter={onEnter} idx={i} />
         ))}
-      </motion.div>
+      </div>
 
-      {/* Footer */}
-      <motion.div
+      {/* ── FOOTER ── */}
+      <motion.footer
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.7 }}
-        className="mt-12 flex flex-col items-center gap-4"
+        className="w-full px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3"
+        style={{ borderTop: '2px solid #111', background: '#f0ede6' }}
       >
-        <p className="text-stone-600 text-xs text-center">
-          All conversations and community posts are private. Nothing is identified.
+        <p className="text-[10px] font-mono text-black/35">
+          All conversations are private. Nothing is identified or stored.
         </p>
-
-        {/* Joy page shortcut */}
-        <motion.button
+        <button
           onClick={() => onEnter('joy')}
-          whileHover={{ scale: 1.06, y: -2 }}
-          whileTap={{ scale: 0.97 }}
-          className="flex items-center gap-2 px-5 py-2 rounded-full border text-xs font-mono transition-all"
-          style={{
-            borderColor: 'rgba(240,100,150,0.25)',
-            background:  'rgba(240,100,150,0.07)',
-            color:       'rgba(240,150,180,0.75)',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(240,100,150,0.15)'; e.currentTarget.style.borderColor = 'rgba(240,100,150,0.45)'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(240,100,150,0.07)'; e.currentTarget.style.borderColor = 'rgba(240,100,150,0.25)'; }}
+          className="flex items-center gap-2 px-4 py-2 text-[11px] font-black font-mono uppercase tracking-widest transition-all text-black"
+          style={{ border: BLK, background: '#fce7f3', boxShadow: '2px 2px 0 #111' }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#111'; e.currentTarget.style.color = '#fce7f3'; e.currentTarget.style.boxShadow = 'none'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#fce7f3'; e.currentTarget.style.color = '#111'; e.currentTarget.style.boxShadow = '2px 2px 0 #111'; }}
         >
-          <span style={{ fontSize: '0.9rem' }}>💗</span>
-          need a moment?
-        </motion.button>
-      </motion.div>
+          💗 Need a moment?
+        </button>
+      </motion.footer>
+
     </div>
   );
 }

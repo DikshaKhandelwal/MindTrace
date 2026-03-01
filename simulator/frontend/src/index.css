@@ -27,6 +27,12 @@
   }
 
   /* Per-module backgrounds */
+  .hub-bg {
+    min-height: 100vh;
+    background-color: #faf7f2;
+    color: #111;
+  }
+
   .sim-bg {
     background-image: url('/bg_simulator.png');
     background-size: cover;
@@ -38,7 +44,7 @@
   }
 
   .social-bg {
-    background-image: url('/module2_bg.png');
+    background-image: url('/social_bg.png');
     background-size: cover;
     background-position: center top;
     background-attachment: fixed;
@@ -57,7 +63,7 @@
         rgba(250, 225, 240, 0.28) 70%,
         rgba(255, 220, 235, 0.42) 100%
       ),
-      url('/module4.jpg') center / cover no-repeat fixed;
+      url('/module4.png') center / cover no-repeat fixed;
     min-height: 100vh;
     color: rgba(70, 10, 40, 0.90);
   }
@@ -206,10 +212,12 @@
 
   /* ── Sleep Guardian module ─────────────────────────────────────────────── */
   .sleep-bg {
-    background:
-      radial-gradient(ellipse at 20% 15%, rgba(99,79,220,0.18) 0%, transparent 55%),
-      radial-gradient(ellipse at 80% 80%, rgba(139,92,246,0.12) 0%, transparent 50%),
-      linear-gradient(160deg, #080d1e 0%, #0d1230 40%, #0a0d28 70%, #060812 100%);
+    background-image: url('/sleep_bg.avif');
+    background-size: cover;
+    background-position: center top;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-color: #080d1e;
     min-height: 100vh;
     color: #e0e4ff;
   }
@@ -321,6 +329,16 @@
   50% { opacity: 0; }
 }
 
+@keyframes talkPulse {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(167,139,250,0.4), 0 0 20px rgba(139,92,246,0.25); }
+  50%       { box-shadow: 0 0 0 3px rgba(167,139,250,0.75), 0 0 40px rgba(139,92,246,0.50); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 /* Score ring animation */
 .score-ring {
   transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -335,6 +353,14 @@
 .emotion-confused  { box-shadow: 0 0 20px rgba(99, 102, 241, 0.25); }
 .emotion-apologetic{ box-shadow: 0 0 20px rgba(236, 72, 153, 0.25); }
 .emotion-resistant { box-shadow: 0 0 20px rgba(239, 68, 68, 0.25); }
+
+/* Mind Café */
+.cafe-bg {
+  min-height: 100vh;
+  background: linear-gradient(160deg, #1c0d00 0%, #2d1600 40%, #1a0a00 100%);
+  font-family: 'Georgia', serif;
+}
+.cafe-bg * { box-sizing: border-box; }
 .emotion-warming   { box-shadow: 0 0 20px rgba(251, 191, 36, 0.25); }
 .emotion-dismissive{ box-shadow: 0 0 20px rgba(107, 114, 128, 0.25); }
 .emotion-vulnerable{ box-shadow: 0 0 20px rgba(244, 114, 182, 0.25); }

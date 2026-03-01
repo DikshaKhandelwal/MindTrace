@@ -175,6 +175,23 @@ Respond ONLY in this JSON format (no markdown):
   }
 });
 
+// ── GET /api/community/circle-stats ──────────────────────────────────────────
+// Returns per-category post counts + today's active count
+communityRouter.get('/circle-stats', (req, res) => {
+  const posts = readPosts();
+  const today = new Date().toISOString().slice(0, 10);
+
+  const stats = {};
+  posts.forEach(p => {
+    if (!p.category) return;
+    if (!stats[p.category]) stats[p.category] = { posts: 0, today: 0 };
+    stats[p.category].posts++;
+    if (p.createdAt?.startsWith(today)) stats[p.category].today++;
+  });
+
+  res.json(stats);
+});
+
 // ── POST /api/community/checkin ───────────────────────────────────────────────
 communityRouter.post('/checkin', async (req, res) => {
   const { mood } = req.body;

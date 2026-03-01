@@ -6,9 +6,9 @@ import { CATEGORY_META } from '../data/posts';
 
 const MAX = 600;
 
-export default function PostComposer({ onClose, onPublish }) {
+export default function PostComposer({ onClose, onPublish, defaultCategory = '' }) {
   const [content, setContent] = useState('');
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState(defaultCategory);
   const [loading, setLoading] = useState(false);
   const [crisis, setCrisis] = useState(false);
   const [error, setError] = useState('');

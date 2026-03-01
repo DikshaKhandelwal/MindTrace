@@ -217,94 +217,110 @@ function Workspace({ onBack }) {
 
   // ── IDLE SCREEN ───────────────────────────────────────────────────────────
   if (phase === 'idle' || phase === 'loading') {
+    const BLK = '2px solid #111';
     return (
       <div className="clarity-bg min-h-screen flex flex-col">
-        {/* Top bar */}
-        <div className="flex items-center justify-between px-5 pt-5 pb-3">
+        {/* Top bar — newspaper style */}
+        <div className="flex items-center justify-between px-5 pt-5 pb-3" style={{ borderBottom: BLK, background: '#fbcfe8' }}>
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-sm font-semibold"
-            style={{ color: 'rgba(131,24,67,0.6)' }}
+            className="flex items-center gap-2 text-xs font-black font-mono uppercase tracking-widest"
+            style={{ color: '#111' }}
           >
-            <ArrowLeft size={15} /> Hub
+            <ArrowLeft size={14} /> ← Hub
           </button>
-          <span className="text-xs font-black tracking-widest uppercase" style={{ color: 'rgba(244,114,182,0.6)' }}>
-            Clarity Engine
+          <span className="text-[11px] font-black font-mono uppercase tracking-[0.22em]" style={{ color: '#be185d' }}>
+            Module 04 · Clarity Engine
           </span>
-          <div className="w-16" />
+          <div className="w-24" />
         </div>
 
         {/* Hero */}
-        <div className="flex-1 flex flex-col items-center justify-center px-6 pb-16">
+        <div className="flex-1 flex flex-col items-center justify-center px-8 py-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="w-full max-w-lg"
+            className="w-full max-w-2xl"
+            style={{ border: BLK, boxShadow: '6px 6px 0 #111' }}
           >
-            {/* Icon */}
-            <div className="flex justify-center mb-6">
-              <div
-                className="w-16 h-16 rounded-2xl flex items-center justify-center"
-                style={{ background: 'rgba(244,114,182,0.15)', border: '1.5px solid rgba(244,114,182,0.3)' }}
-              >
-                <Zap size={28} style={{ color: '#f472b6' }} />
+            {/* Card stripe header */}
+            <div className="flex items-center justify-between px-6 py-4" style={{ background: '#fbcfe8', borderBottom: BLK }}>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[9px] font-black font-mono uppercase tracking-widest" style={{ color: 'rgba(0,0,0,0.45)' }}>
+                    Module 04
+                  </span>
+                  <span className="px-1.5 py-0.5 text-[9px] font-black text-white leading-none" style={{ background: '#111' }}>
+                    4 features
+                  </span>
+                </div>
+                <h1 className="font-black text-3xl sm:text-4xl leading-tight tracking-tight text-black" style={{ fontFamily: 'Georgia, serif' }}>
+                  What's on your mind?
+                </h1>
+                <p className="text-xs italic mt-1 font-mono" style={{ color: '#be185d' }}>"Map it, break it, clear it."</p>
+              </div>
+              <div className="shrink-0 w-12 h-12 flex items-center justify-center" style={{ background: '#fff', border: BLK, boxShadow: '2px 2px 0 #111' }}>
+                <Zap size={22} style={{ color: '#be185d' }} />
               </div>
             </div>
 
-            <h1 className="text-2xl font-black text-center mb-2" style={{ color: 'rgba(131,24,67,0.9)' }}>
-              What's on your mind?
-            </h1>
-            <p className="text-center text-sm mb-8" style={{ color: 'rgba(131,24,67,0.5)' }}>
-              Describe your decision or situation. GPT will map it live — you click, explore, and think.
-            </p>
+            {/* Body */}
+            <div className="px-6 py-6" style={{ background: '#fce7f3' }}>
+              <p className="text-sm font-mono mb-6 leading-relaxed" style={{ color: 'rgba(131,24,67,0.65)' }}>
+                Describe your decision or situation. GPT will map it live —<br />
+                you click, explore, and find clarity.
+              </p>
 
-            {/* API key notice */}
-            {!hasKey && (
-              <div
-                className="mb-5 px-4 py-2.5 rounded-xl text-xs text-center"
-                style={{ background: 'rgba(251,191,36,0.12)', border: '1px solid rgba(251,191,36,0.3)', color: 'rgba(120,80,0,0.7)' }}
-              >
-                ⚡ Demo mode — add <code>VITE_OPENAI_KEY</code> in <code>.env</code> for GPT-powered insights
-              </div>
-            )}
+              {/* API key notice */}
+              {!hasKey && (
+                <div className="mb-5 px-4 py-2.5 text-xs font-mono text-center" style={{ background: '#fef9c3', border: '2px solid #111', boxShadow: '2px 2px 0 #111', color: '#78350f' }}>
+                  ⚡ Demo mode — add <code>VITE_OPENAI_KEY</code> in <code>.env</code> for GPT-powered insights
+                </div>
+              )}
 
-            {/* Input form */}
-            <form onSubmit={handleInit}>
-              <textarea
-                value={draftText}
-                onChange={e => setDraftText(e.target.value)}
-                placeholder={"e.g. \"I want to quit my job but I'm scared of the financial risk and what my family will think...\"\n\nWrite as much or as little as you like."}
-                rows={5}
-                className="w-full rounded-2xl px-4 py-3.5 text-sm resize-none focus:outline-none"
-                style={{
-                  background: 'rgba(255,255,255,0.75)',
-                  border: '1.5px solid rgba(244,114,182,0.3)',
-                  color: 'rgba(50,20,35,0.85)',
-                  boxShadow: '0 2px 20px rgba(244,114,182,0.08)',
-                }}
-                onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleInit(e); }}
-              />
+              {/* Input form */}
+              <form onSubmit={handleInit}>
+                <textarea
+                  value={draftText}
+                  onChange={e => setDraftText(e.target.value)}
+                  placeholder={"e.g. \"I want to quit my job but I'm scared of the financial risk and what my family will think...\"\n\nWrite as much or as little as you like."}
+                  rows={7}
+                  className="w-full px-5 py-4 text-sm font-mono resize-none focus:outline-none"
+                  style={{
+                    background: '#fff',
+                    border: BLK,
+                    color: '#1a0a10',
+                    boxShadow: 'inset 1px 1px 0 rgba(0,0,0,0.06)',
+                  }}
+                  onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleInit(e); }}
+                />
 
-              <button
-                type="submit"
-                disabled={!draftText.trim() || phase === 'loading'}
-                className="mt-4 w-full py-3.5 rounded-2xl font-bold text-sm transition-all"
-                style={{
-                  background: draftText.trim()
-                    ? 'linear-gradient(135deg,#f9a8d4,#f472b6)'
-                    : 'rgba(244,114,182,0.15)',
-                  color: draftText.trim() ? '#fff' : 'rgba(244,114,182,0.5)',
-                  boxShadow: draftText.trim() ? '0 4px 20px rgba(244,114,182,0.35)' : 'none',
-                }}
-              >
-                {phase === 'loading' ? '🧠 Mapping your thought…' : 'Map my thinking →'}
-              </button>
-            </form>
+                <button
+                  type="submit"
+                  disabled={!draftText.trim() || phase === 'loading'}
+                  className="mt-4 w-full py-4 font-black text-sm font-mono uppercase tracking-widest transition-all"
+                  style={{
+                    background: draftText.trim() ? '#111' : 'rgba(0,0,0,0.08)',
+                    color: draftText.trim() ? '#fbcfe8' : 'rgba(0,0,0,0.3)',
+                    border: BLK,
+                    boxShadow: draftText.trim() ? '3px 3px 0 #be185d' : 'none',
+                  }}
+                >
+                  {phase === 'loading' ? '🧠 Mapping your thought…' : 'Map my thinking →'}
+                </button>
+              </form>
+            </div>
 
-            <p className="text-center mt-4 text-xs" style={{ color: 'rgba(131,24,67,0.35)' }}>
-              Cmd+Enter to submit · Click any node to explore · Add thoughts at any time
-            </p>
+            {/* Card footer */}
+            <div className="px-6 py-3 flex items-center justify-between" style={{ background: '#fbcfe8', borderTop: BLK }}>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-widest" style={{ color: 'rgba(0,0,0,0.4)' }}>
+                Cmd+Enter to submit
+              </span>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-widest" style={{ color: 'rgba(0,0,0,0.4)' }}>
+                Click nodes to explore
+              </span>
+            </div>
           </motion.div>
         </div>
       </div>
@@ -486,12 +502,18 @@ function Workspace({ onBack }) {
           )}
         </AnimatePresence>
 
-        {/* ── Node count / status hint ────────────────────────────────── */}
         <div
-          className="absolute bottom-24 left-4 z-20 text-xs pointer-events-none"
-          style={{ color: 'rgba(244,114,182,0.45)' }}
+          className="absolute bottom-24 left-4 z-20 pointer-events-none flex items-center gap-2"
         >
-          {rfNodes.length} nodes · click any node to explore deeper
+          <span
+            className="px-1.5 py-0.5 rounded text-[9px] font-black"
+            style={{ background: 'rgba(244,114,182,0.55)', color: '#fff' }}
+          >
+            {rfNodes.length}
+          </span>
+          <span className="text-xs" style={{ color: 'rgba(244,114,182,0.50)' }}>
+            nodes · click any to explore deeper
+          </span>
         </div>
       </div>
     </div>

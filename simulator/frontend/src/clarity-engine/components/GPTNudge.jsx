@@ -22,19 +22,26 @@ export default function GPTNudge({ nudges = [], dominant, hasKey }) {
             <div
               className="relative flex items-start gap-2.5 px-4 py-3 rounded-2xl text-sm leading-snug shadow-lg max-w-[260px]"
               style={{
-                background: 'rgba(255,255,255,0.92)',
-                border: '1px solid rgba(244,114,182,0.25)',
+                background: 'rgba(255,255,255,0.95)',
+                border: '1.5px solid rgba(244,114,182,0.28)',
                 backdropFilter: 'blur(10px)',
                 boxShadow: '0 4px 24px rgba(244,114,182,0.12)',
               }}
             >
-              {/* Brain icon */}
-              <span className="text-base mt-0.5 shrink-0">🧠</span>
+              {/* Number badge */}
+              <span
+                className="text-[9px] font-black shrink-0 mt-0.5 tabular-nums"
+                style={{ color: 'rgba(244,114,182,0.50)' }}
+              >
+                {String(i + 1).padStart(2, '0')}.
+              </span>
 
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-black tracking-widest text-rose-400 uppercase mb-1">
-                  {hasKey ? 'GPT Insight' : 'Thinking Guide'}
-                </p>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <p className="text-[9px] font-black tracking-widest text-rose-400 uppercase">
+                    {hasKey ? 'GPT Insight' : 'Thinking Guide'}
+                  </p>
+                </div>
                 <p className="text-slate-700 text-xs leading-relaxed">{nudge}</p>
               </div>
 

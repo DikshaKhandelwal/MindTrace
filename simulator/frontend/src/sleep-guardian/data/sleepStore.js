@@ -39,8 +39,11 @@ export function updateTodayLog(patch) {
   return logs[today];
 }
 
-/** Build score 0-100 + ghost state from a log */
-export function scoreLog(log) {
+/**
+ * Internal base scorer — no streak bonus. Used by getStreak() to avoid
+ * circular recursion (scoreLog → getStreak → scoreLog → …).
+ */
+function _baseScore(log) {
   let score = 100;
   const now  = new Date();
   const hour = now.getHours() + now.getMinutes() / 60;
@@ -50,14 +53,14 @@ export function scoreLog(log) {
     const [lh, lm] = log.laptopSessionStart.split(':').map(Number);
     const startHour = lh + lm / 60;
     const duration  = hour >= startHour ? hour - startHour : 24 - startHour + hour;
-    if (duration >= 10) score -= 15;       // marathon session
-    else if (duration >= 7) score -= 8;   // long day
+    if (duration >= 10) score -= 15;
+    else if (duration >= 7) score -= 8;
   }
 
-  // Late screen time penalty (laptop still open late)
+  // Late screen time penalty
   if (hour >= 23)              score -= 20;
   if (hour >= 0 && hour < 4)   score -= 35;
-  else if (hour >= 22)         score -= 8;  // 10-11 PM warning
+  else if (hour >= 22)         score -= 8;
 
   // Caffeine timing penalty
   if (log.caffeineTime) {
@@ -80,26 +83,31 @@ export function scoreLog(log) {
     score -= 5;
   }
 
-  // ── New bad habit penalties ────────────────────────────────────────────────
-  if (log.lateSnack)    score -= 8;   // eating within 2h of bed
-  if (log.alcohol)      score -= 12;  // disrupts REM
-  if (log.bingeWatch)   score -= 10;  // streaming >2h in evening
-  if (log.highStress)   score -= 9;   // cortisol keeps awake
-  if (log.lateExercise) score -= 7;   // adrenaline spike within 3h
-  if (log.lateNap)      score -= 8;   // napped after 3 PM
-  if (log.gaming)       score -= 9;   // stimulation + blue light
-  if (log.socialScroll) score -= 10;  // doom scroll in bed
-  if (log.blueLight)    score -= 6;   // no blue-light filter
+  // Bad habit penalties
+  if (log.lateSnack)    score -= 8;
+  if (log.alcohol)      score -= 12;
+  if (log.bingeWatch)   score -= 10;
+  if (log.highStress)   score -= 9;
+  if (log.lateExercise) score -= 7;
+  if (log.lateNap)      score -= 8;
+  if (log.gaming)       score -= 9;
+  if (log.socialScroll) score -= 10;
+  if (log.blueLight)    score -= 6;
 
   // Bonuses
   if (log.phoneDowntime) score += 10;
-  if (log.earlyDim)      score += 5;  // dimmed screen after 9 PM
+  if (log.earlyDim)      score += 5;
 
-  // Streak bonus (up to +15)
+  return Math.max(0, Math.min(100, score));
+}
+
+/** Build score 0-100 + ghost state from a log (includes streak bonus) */
+export function scoreLog(log) {
+  let score = _baseScore(log);
+
+  // Streak bonus (up to +15) — uses _baseScore internally to avoid circular call
   const streak = getStreak();
-  score += Math.min(streak * 3, 15);
-
-  score = Math.max(0, Math.min(100, score));
+  score = Math.max(0, Math.min(100, score + Math.min(streak * 3, 15)));
 
   const ghostState =
     score >= 72 ? 'fresh'
@@ -164,7 +172,7 @@ export function caffeineLevel(log) {
   return Math.round(Math.min(100, level));
 }
 
-/** Count of cookies (moon cookies) earned based on history */
+/** Count of cookies (moon cookies) earned based on history + completed challenges */
 export function moonCookies() {
   const logs  = loadLogs();
   let cookies = 0;
@@ -172,11 +180,29 @@ export function moonCookies() {
     const { score } = scoreLog(log);
     if (score >= 72) cookies += 3;
     else if (score >= 50) cookies += 1;
+    cookies += (log.challengeCookies ?? 0);
   });
   return Math.min(cookies, 99);
 }
 
-/** Consecutive good nights streak */
+/** Get completed challenge ids for today */
+export function getTodayChallenges() {
+  return getTodayLog().completedChallenges ?? [];
+}
+
+/** Mark a challenge as complete and award bonus cookies */
+export function completeChallenge(id, reward = 5) {
+  const log = getTodayLog();
+  const already = (log.completedChallenges ?? []).includes(id);
+  if (already) return log;
+  const next = updateTodayLog({
+    completedChallenges: [...(log.completedChallenges ?? []), id],
+    challengeCookies: (log.challengeCookies ?? 0) + reward,
+  });
+  return next;
+}
+
+/** Consecutive good nights streak — uses _baseScore to avoid circular call */
 export function getStreak() {
   const logs = loadLogs();
   let streak = 0;
@@ -185,7 +211,7 @@ export function getStreak() {
     d.setDate(d.getDate() - 1);
     const key = d.toISOString().slice(0, 10);
     if (!logs[key]) break;
-    const { score } = scoreLog(logs[key]);
+    const score = _baseScore(logs[key]);
     if (score >= 60) streak++;
     else break;
   }
@@ -214,9 +240,11 @@ function defaultLog() {
     socialScroll:   false,   // 📱 social media scrolling in bed
     blueLight:      false,   // 💡 no blue-light filter on screen
     earlyDim:       false,   // 🌅 dimmed screen early (bonus)
-    notes:          '',
-    createdAt:      Date.now(),
-    updatedAt:      Date.now(),
+    notes:              '',
+    completedChallenges: [],   // string[] — challenge ids done today
+    challengeCookies:    0,    // bonus moon cookies from challenges
+    createdAt:           Date.now(),
+    updatedAt:           Date.now(),
   };
 }
 

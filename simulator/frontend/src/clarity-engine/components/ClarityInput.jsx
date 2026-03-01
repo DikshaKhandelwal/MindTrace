@@ -32,21 +32,29 @@ export default function ClarityInput({ onAnalyse }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-5 py-10">
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12">
       {/* Hero text */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="text-center mb-8 max-w-xl"
+        className="text-center mb-10 max-w-3xl w-full"
       >
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-5 text-xs font-bold tracking-widest uppercase"
-          style={{ background: 'rgba(244,114,182,0.14)', color: 'rgba(131,24,67,0.80)', border: '1px solid rgba(244,114,182,0.28)' }}>
-          <Sparkles size={11} />
-          Cognitive Debugger
+        <div className="flex items-center justify-center gap-2 mb-5">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold tracking-widest uppercase"
+            style={{ background: 'rgba(244,114,182,0.14)', color: 'rgba(131,24,67,0.80)', border: '1px solid rgba(244,114,182,0.28)' }}>
+            <Sparkles size={11} />
+            Cognitive Debugger
+          </div>
+          <span
+            className="px-2 py-0.5 rounded text-[10px] font-black"
+            style={{ background: 'rgba(80,10,40,0.82)', color: '#fff' }}
+          >
+            04
+          </span>
         </div>
 
-        <h1 className="text-5xl sm:text-6xl font-black leading-tight mb-4"
+        <h1 className="text-6xl sm:text-7xl font-black leading-tight mb-5"
           style={{ color: 'rgba(80,10,40,0.90)' }}>
           What's tangled<br />
           <span style={{
@@ -54,9 +62,12 @@ export default function ClarityInput({ onAnalyse }) {
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           }}>in your mind?</span>
         </h1>
-        <p className="text-base leading-relaxed" style={{ color: 'rgba(120,40,70,0.60)' }}>
+        <p className="text-xl leading-relaxed" style={{ color: 'rgba(120,40,70,0.60)' }}>
           Type any decision, spiral, or fear below.
           The system maps your thinking, finds the loops, and guides you to clarity.
+        </p>
+        <p className="text-base mt-3 italic" style={{ color: 'rgba(160,80,110,0.45)' }}>
+          &ldquo;Map it, break it, clear it.&rdquo;
         </p>
       </motion.div>
 
@@ -65,7 +76,7 @@ export default function ClarityInput({ onAnalyse }) {
         initial={{ opacity: 0, y: 28 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15, duration: 0.55 }}
-        className="w-full max-w-2xl"
+        className="w-full max-w-3xl"
       >
         <div
           className="rounded-3xl p-1.5 transition-all duration-300"
@@ -81,7 +92,7 @@ export default function ClarityInput({ onAnalyse }) {
           <div className="rounded-[20px] overflow-hidden"
             style={{ background: 'rgba(255,245,250,0.82)', backdropFilter: 'blur(20px)' }}>
             <textarea
-              rows={6}
+              rows={8}
               value={text}
               onChange={e => setText(e.target.value)}
               onFocus={() => setFocused(true)}
@@ -96,7 +107,7 @@ export default function ClarityInput({ onAnalyse }) {
               maxLength={800}
             />
             <div className="flex items-center justify-between px-6 pb-5 pt-2">
-              <span className="text-xs" style={{ color: 'rgba(160,80,110,0.45)' }}>
+              <span className="text-sm" style={{ color: 'rgba(160,80,110,0.45)' }}>
                 {wordCount} word{wordCount !== 1 ? 's' : ''} · {800 - text.length} chars left
               </span>
               <motion.button
@@ -120,43 +131,84 @@ export default function ClarityInput({ onAnalyse }) {
           </div>
         </div>
 
-        {/* Example prompts */}
-        <div className="mt-5">
-          <p className="text-xs text-center mb-3" style={{ color: 'rgba(160,80,110,0.45)' }}>
-            Or try an example →
-          </p>
-          <div className="flex flex-wrap gap-2 justify-center">
+        {/* Example prompts — editorial numbered list */}
+        <div className="mt-7">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-[9px] font-black uppercase tracking-widest" style={{ color: 'rgba(131,24,67,0.45)' }}>
+              Or try an example
+            </span>
+            <span
+              className="px-1.5 py-0.5 rounded text-[9px] font-black"
+              style={{ background: 'rgba(80,10,40,0.82)', color: '#fff' }}
+            >
+              {PROMPTS.length}
+            </span>
+          </div>
+          <div
+            className="rounded-2xl overflow-hidden"
+            style={{ border: '1.5px solid rgba(244,114,182,0.22)', background: 'rgba(255,245,250,0.72)' }}
+          >
             {PROMPTS.map((p, i) => (
               <button
                 key={i}
                 onClick={() => usePrompt(p)}
-                className="px-4 py-2 rounded-2xl text-xs font-medium transition-all hover:scale-[1.02]"
-                style={{
-                  background: 'rgba(244,114,182,0.10)',
-                  border: '1px solid rgba(244,114,182,0.22)',
-                  color: 'rgba(131,24,67,0.65)',
-                }}
+                className="w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-pink-50 group"
+                style={{ borderBottom: i < PROMPTS.length - 1 ? '1px solid rgba(244,114,182,0.12)' : 'none' }}
               >
-                "{p.slice(0, 38)}…"
+                <span
+                  className="text-[10px] font-black tabular-nums shrink-0 w-5 text-right"
+                  style={{ color: 'rgba(244,114,182,0.45)' }}
+                >
+                  {String(i + 1).padStart(2, '0')}.
+                </span>
+                <span className="flex-1 text-sm leading-snug italic" style={{ color: 'rgba(120,40,70,0.70)' }}>
+                  &ldquo;{p}&rdquo;
+                </span>
+                <span
+                  className="shrink-0 text-xs font-bold group-hover:translate-x-0.5 transition-transform"
+                  style={{ color: 'rgba(244,114,182,0.45)' }}
+                >
+                  →
+                </span>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Node legend */}
+        {/* Node legend — editorial badge row */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="mt-8 flex flex-wrap justify-center gap-3"
+          className="mt-7"
         >
-          {NODE_LEGEND.map(n => (
-            <div key={n.label} className="flex items-center gap-1.5 text-xs" style={{ color: 'rgba(120,40,70,0.55)' }}>
-              <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: n.color }} />
-              {n.label}
-            </div>
-          ))}
-          <span className="text-xs" style={{ color: 'rgba(160,80,110,0.35)' }}>— nodes your map will build</span>
+          <div className="flex items-center gap-2 mb-2.5">
+            <span className="text-[9px] font-black uppercase tracking-widest" style={{ color: 'rgba(131,24,67,0.40)' }}>
+              Node types your map builds
+            </span>
+            <span
+              className="px-1.5 py-0.5 rounded text-[9px] font-black"
+              style={{ background: 'rgba(80,10,40,0.80)', color: '#fff' }}
+            >
+              {NODE_LEGEND.length}
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {NODE_LEGEND.map(n => (
+              <div
+                key={n.label}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-semibold"
+                style={{
+                  background: n.color + '22',
+                  border: `1.5px solid ${n.color}66`,
+                  color: 'rgba(80,10,40,0.78)',
+                }}
+              >
+                <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: n.color }} />
+                {n.label}
+              </div>
+            ))}
+          </div>
         </motion.div>
       </motion.div>
     </div>

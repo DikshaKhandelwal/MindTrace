@@ -5,6 +5,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { simulatorRouter } from './routes/simulator.js';
 import { communityRouter } from './routes/community.js';
+import { sleepStoryRouter } from './routes/sleepStory.js';
+import { burnoutRouter } from './routes/burnout.js';
+import { mindCafeRouter } from './routes/mindcafe.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
@@ -20,6 +23,9 @@ app.use(express.json());
 
 app.use('/api/simulator', simulatorRouter);
 app.use('/api/community', communityRouter);
+app.use('/api/sleep', sleepStoryRouter);
+app.use('/api/burnout', burnoutRouter);
+app.use('/api/mindcafe', mindCafeRouter);
 
 app.get('/health', (_, res) => res.json({ status: 'ok', module: 'Reality Simulator' }));
 

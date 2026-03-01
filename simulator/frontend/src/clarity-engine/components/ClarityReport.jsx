@@ -17,12 +17,19 @@ function scoreLabel(s) {
   return             { text: 'Still Tangled',      color: '#f87171', bg: 'rgba(248,113,113,0.1)' };
 }
 
-function Section({ title, children }) {
+function Section({ title, sub, children }) {
   return (
     <div className="mb-5">
-      <p className="text-[9px] font-black uppercase tracking-widest mb-2.5" style={{ color: 'rgba(244,114,182,0.5)' }}>
-        {title}
-      </p>
+      <div className="flex items-center gap-2 mb-2.5">
+        <p className="text-[9px] font-black uppercase tracking-widest" style={{ color: 'rgba(244,114,182,0.5)' }}>
+          {title}
+        </p>
+      </div>
+      {sub && (
+        <p className="text-xs italic mb-2" style={{ color: 'rgba(131,24,67,0.40)' }}>
+          &ldquo;{sub}&rdquo;
+        </p>
+      )}
       {children}
     </div>
   );
@@ -79,9 +86,23 @@ export default function ClarityReport({ nodes, rawText, answers, onClose, onRese
           style={{ background: 'linear-gradient(135deg,#fff1f5,#fce7f3)' }}>
           <div className="text-4xl mb-2">🧠</div>
           <h2 className="text-xl font-black mb-1" style={{ color: '#831843' }}>Clarity Report</h2>
-          <p className="text-xs mb-5" style={{ color: 'rgba(131,24,67,0.45)' }}>
-            {nodes.length} nodes mapped · {goalNodes.length + oppNodes.length} positive · {fearNodes.length} fear{fearNodes.length !== 1 ? 's' : ''}
-          </p>
+          <div className="flex items-center justify-center gap-2 mb-5 flex-wrap">
+            <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold"
+              style={{ background: 'rgba(244,114,182,0.10)', border: '1px solid rgba(244,114,182,0.22)', color: 'rgba(131,24,67,0.70)' }}>
+              <span className="font-black" style={{ background: 'rgba(80,10,40,0.82)', color: '#fff', borderRadius: 4, padding: '0 4px', fontSize: 9 }}>{nodes.length}</span>
+              nodes
+            </span>
+            <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold"
+              style={{ background: 'rgba(134,239,172,0.10)', border: '1px solid rgba(134,239,172,0.30)', color: '#065f46' }}>
+              <span className="font-black" style={{ background: 'rgba(6,95,70,0.82)', color: '#fff', borderRadius: 4, padding: '0 4px', fontSize: 9 }}>{goalNodes.length + oppNodes.length}</span>
+              positive
+            </span>
+            <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold"
+              style={{ background: 'rgba(248,113,113,0.10)', border: '1px solid rgba(248,113,113,0.28)', color: '#7f1d1d' }}>
+              <span className="font-black" style={{ background: 'rgba(127,29,29,0.82)', color: '#fff', borderRadius: 4, padding: '0 4px', fontSize: 9 }}>{fearNodes.length}</span>
+              fear{fearNodes.length !== 1 ? 's' : ''}
+            </span>
+          </div>
 
           {/* Score ring */}
           <div className="flex justify-center mb-3">
@@ -123,13 +144,35 @@ export default function ClarityReport({ nodes, rawText, answers, onClose, onRese
             </Section>
           )}
 
-          {/* Node breakdown */}
-          <Section title="What your mind mapped">
-            <div className="flex flex-wrap gap-1.5">
-              {breakdown.map(({ type, cfg, count }) => (
-                <div key={type} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold"
-                  style={{ background: cfg.bg, border: `1px solid ${cfg.border}`, color: cfg.color }}>
-                  {cfg.emoji} {count} {cfg.title.toLowerCase()}
+          {/* Node breakdown — editorial numbered list */}
+          <Section title="What your mind mapped" sub="Every node your thinking created">
+            <div
+              className="rounded-2xl overflow-hidden"
+              style={{ border: '1.5px solid rgba(244,114,182,0.20)', background: 'rgba(255,245,250,0.60)' }}
+            >
+              {breakdown.map(({ type, cfg, count }, i) => (
+                <div
+                  key={type}
+                  className="flex items-center gap-3 px-4 py-2.5"
+                  style={{ borderBottom: i < breakdown.length - 1 ? '1px solid rgba(244,114,182,0.10)' : 'none' }}
+                >
+                  <span
+                    className="text-[10px] font-black tabular-nums w-5 shrink-0 text-right"
+                    style={{ color: 'rgba(244,114,182,0.40)' }}
+                  >
+                    {String(i + 1).padStart(2, '0')}.
+                  </span>
+                  <span className="text-sm shrink-0">{cfg.emoji}</span>
+                  <span className="flex-1 text-xs font-semibold" style={{ color: cfg.color }}>
+                    {cfg.title}
+                  </span>
+                  <span
+                    className="px-1.5 py-0.5 rounded text-[9px] font-black shrink-0"
+                    style={{ background: 'rgba(80,10,40,0.80)', color: '#fff' }}
+                  >
+                    {count}
+                  </span>
+                  <span className="text-xs font-bold shrink-0" style={{ color: 'rgba(244,114,182,0.40)' }}>→</span>
                 </div>
               ))}
             </div>

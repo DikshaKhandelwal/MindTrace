@@ -6,7 +6,7 @@ const router = Router();
 // Lazy init — ensures dotenv has already run before first request
 let _openai = null;
 function getOpenAI() {
-  if (!_openai) _openai = new OpenAI({ apiKey: process.env.OPENAI_API });
+  if (!_openai) _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   return _openai;
 }
 
@@ -268,6 +268,79 @@ Respond ONLY with JSON: { "roomType": "...", "voice": "..." }`;
     res.json(JSON.parse(completion.choices[0].message.content));
   } catch {
     res.json({ roomType: 'living_room', voice: 'nova' });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────
+// POST /api/simulator/character-image
+// Calls DALL-E 3 to generate a photorealistic portrait of the NPC
+// ─────────────────────────────────────────────────────────────
+router.post('/character-image', async (req, res) => {
+  const { persona, scenario } = req.body;
+  if (!persona) return res.status(400).json({ error: 'persona required' });
+
+  const age          = parseInt(persona.age) || 30;
+  const rel          = (persona.relationship || 'person').toLowerCase();
+  const mood         = persona.currentMood || 'neutral';
+  const setting      = scenario?.setting || 'a modern interior room';
+
+  // Build clothing description from relationship
+  let clothing = 'smart casual clothing';
+  if (rel.includes('boss') || rel.includes('manager') || rel.includes('ceo'))
+    clothing = 'tailored business suit';
+  else if (rel.includes('doctor') || rel.includes('nurse'))
+    clothing = 'medical scrubs or white coat';
+  else if (rel.includes('therapist') || rel.includes('counselor'))
+    clothing = 'smart casual professional outfit';
+  else if (rel.includes('parent') || rel.includes('mom') || rel.includes('dad'))
+    clothing = 'comfortable home casual wear';
+  else if (rel.includes('partner') || rel.includes('boyfriend') || rel.includes('girlfriend'))
+    clothing = 'relaxed casual clothing';
+  else if (rel.includes('friend'))
+    clothing = 'casual everyday clothes';
+  else if (rel.includes('teacher') || rel.includes('professor'))
+    clothing = 'smart casual or light formal wear';
+
+  // Mood to expression mapping
+  const expressionMap = {
+    'nervous': 'slightly anxious expression',
+    'defensive': 'guarded, arms-crossed expression',
+    'upset': 'visibly upset expression',
+    'calm': 'calm neutral expression',
+    'frustrated': 'slightly frustrated expression',
+    'worried': 'concerned expression',
+    'happy': 'warm genuine smile',
+    'sad': 'sad downcast expression',
+    'angry': 'tense expression',
+    'guilty': 'remorseful expression',
+  };
+  const expression = Object.entries(expressionMap).find(([k]) => mood.toLowerCase().includes(k))?.[1]
+    ?? 'neutral realistic expression';
+
+  const prompt = [
+    `Photorealistic cinematic portrait of a ${age}-year-old person,`,
+    `wearing ${clothing},`,
+    `${expression},`,
+    `standing in ${setting},`,
+    `half-body shot from waist up, facing camera slightly,`,
+    `warm cinematic lighting, shallow depth of field blurred background,`,
+    `sharp facial detail, natural skin texture, ultra-realistic render,`,
+    `film-quality photography, 50mm lens portrait — NO text, NO watermark`,
+  ].join(' ');
+
+  try {
+    const response = await getOpenAI().images.generate({
+      model:   'dall-e-3',
+      prompt,
+      n:       1,
+      size:    '1024x1792',
+      quality: 'hd',
+      style:   'natural',
+    });
+    res.json({ imageUrl: response.data[0].url });
+  } catch (err) {
+    console.error('[CHARACTER-IMAGE ERROR]', err.message);
+    res.status(500).json({ error: err.message });
   }
 });
 

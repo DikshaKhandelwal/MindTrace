@@ -101,7 +101,7 @@ export default function LoopBreaker({ loopInfo, onBreak }) {
           <span className="text-2xl">{loopInfo.emoji}</span>
           <h3 className={`font-bold text-lg ${colors.accent}`}>{loopInfo.label}</h3>
         </div>
-        <p className="text-slate-500 text-sm mt-1">{loopInfo.tagline}</p>
+        <p className="text-slate-500 text-sm mt-1 italic">&ldquo;{loopInfo.tagline}&rdquo;</p>
       </div>
 
       <div className="px-5 py-4 space-y-5">

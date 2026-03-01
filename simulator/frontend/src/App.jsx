@@ -12,6 +12,8 @@ import ClarityEngineApp from './clarity-engine/App';
 import MindCheckApp from './mind-check/App';
 import JoyPage from './mind-check/components/JoyPage';
 import SleepGuardianApp from './sleep-guardian/App';
+import BurnoutDetectorApp from './burnout-detector/App';
+import MindCafeApp from './mind-cafe/App';
 import MainHub from './MainHub';
 
 // Root shell: activeModule = null | 'simulator' | 'social'
@@ -137,6 +139,16 @@ export default function App() {
       {activeModule === 'sleep-guardian' && (
         <motion.div key="sleep-guardian" variants={fade} initial="initial" animate="animate" exit="exit" transition={t}>
           <SleepGuardianApp onBack={() => setActiveModule(null)} />
+        </motion.div>
+      )}
+      {activeModule === 'burnout-detector' && (
+        <motion.div key="burnout-detector" variants={fade} initial="initial" animate="animate" exit="exit" transition={t}>
+          <BurnoutDetectorApp onBack={() => setActiveModule(null)} />
+        </motion.div>
+      )}
+      {activeModule === 'mind-cafe' && (
+        <motion.div key="mind-cafe" variants={fade} initial="initial" animate="animate" exit="exit" transition={t}>
+          <MindCafeApp onBack={() => setActiveModule(null)} />
         </motion.div>
       )}
       {activeModule === 'joy' && (
