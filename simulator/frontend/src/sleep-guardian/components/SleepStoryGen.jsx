@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createAmbient, PLACE_AMBIENT } from '../data/ambientAudio';
 
-const BACKEND = 'http://localhost:3001';
+const BACKEND = import.meta.env.VITE_API_URL || '';
 
 // ── TTS helpers ───────────────────────────────────────────────────────────────
 function stripPauseTags(text) {

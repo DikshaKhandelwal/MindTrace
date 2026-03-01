@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: mindtrace-api
+    runtime: node
+    rootDir: simulator/backend
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: OPENAI_API_KEY
+        sync: false          # set manually in Render dashboard
+      - key: ALLOWED_ORIGIN
+        sync: false          # set to your Vercel URL, e.g. https://mindtrace.vercel.app
