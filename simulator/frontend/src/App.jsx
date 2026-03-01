@@ -92,6 +92,7 @@ function SimulatorApp({ onBack }) {
               history={conversationHistory}
               onReplay={() => { setConversationHistory([]); setPhase('conversation'); }}
               onNewScenario={handleReset}
+              onBack={onBack}
             />
           </motion.div>
         )}

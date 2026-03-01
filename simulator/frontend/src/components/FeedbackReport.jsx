@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RotateCcw, Sparkles, ChevronDown, ChevronUp, Star, Zap, TrendingUp } from 'lucide-react';
+import { RotateCcw, Sparkles, ChevronDown, ChevronUp, Star, Zap, TrendingUp, ChevronLeft } from 'lucide-react';
 
 // Animated circular score ring
 function ScoreRing({ score, color, size = 100 }) {
@@ -54,7 +54,7 @@ const itemVariants = {
   show:   { opacity: 1, y: 0, transition: { duration: 0.45, ease: 'easeOut' } },
 };
 
-export default function FeedbackReport({ feedback, scenarioData, history, onReplay, onNewScenario }) {
+export default function FeedbackReport({ feedback, scenarioData, history, onReplay, onNewScenario, onBack }) {
   const { scores, overallSummary, keyMoments, betterResponses, growthAreas, strengths, nextChallenge } = feedback;
   const [openBetter, setOpenBetter] = useState(null);
 
@@ -77,6 +77,15 @@ export default function FeedbackReport({ feedback, scenarioData, history, onRepl
       </div>
 
       <div className="max-w-3xl mx-auto relative z-10">
+        {/* Back to Hub */}
+        {onBack && (
+          <button
+            onClick={onBack}
+            className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 transition-colors mb-4"
+          >
+            <ChevronLeft size={15} /> Back to Hub
+          </button>
+        )}
         <motion.div
           variants={containerVariants}
           initial="hidden"
