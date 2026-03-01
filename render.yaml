@@ -12,3 +12,5 @@ services:
         sync: false          # set manually in Render dashboard
       - key: ALLOWED_ORIGIN
         sync: false          # set to your Vercel URL, e.g. https://mindtrace.vercel.app
+      - key: GITHUB_TOKEN
+        sync: false          # GitHub PAT (read:public_repo) — raises rate limit from 60 to 5000 req/hr

@@ -12,11 +12,12 @@ burnoutRouter.post('/github/commits', async (req, res) => {
   const { owner, repo, token, since } = req.body;
   if (!owner || !repo) return res.status(400).json({ error: 'owner and repo are required' });
 
+  const effectiveToken = token || process.env.GITHUB_TOKEN;
   const headers = {
     Accept: 'application/vnd.github.v3+json',
     'User-Agent': 'MindTrace-BurnoutDetector/1.0',
   };
-  if (token) headers['Authorization'] = `Bearer ${token}`;
+  if (effectiveToken) headers['Authorization'] = `Bearer ${effectiveToken}`;
 
   try {
     // Fetch up to 100 commits; paginate if needed for 90-day window
@@ -148,11 +149,12 @@ burnoutRouter.post('/github/repo', async (req, res) => {
   const { owner, repo, token } = req.body;
   if (!owner || !repo) return res.status(400).json({ error: 'owner and repo required' });
 
+  const effectiveToken = token || process.env.GITHUB_TOKEN;
   const headers = {
     Accept: 'application/vnd.github.v3+json',
     'User-Agent': 'MindTrace-BurnoutDetector/1.0',
   };
-  if (token) headers['Authorization'] = `Bearer ${token}`;
+  if (effectiveToken) headers['Authorization'] = `Bearer ${effectiveToken}`;
 
   try {
     const resp = await fetch(`https://api.github.com/repos/${owner}/${repo}`, { headers });
