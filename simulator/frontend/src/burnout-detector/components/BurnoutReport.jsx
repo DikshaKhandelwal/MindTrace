@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Brain, AlertTriangle, CheckCircle, ArrowRight, Heart, Zap, RefreshCw } from 'lucide-react';
 import { riskLabel } from '../data/burnoutSignals';
 
-const API = 'http://localhost:3001/api/burnout';
+const API = `${import.meta.env.VITE_API_URL || ''}/api/burnout`;
 const BLK = '1.5px solid #111';
 
 // ── Score donut ───────────────────────────────────────────────────────────────

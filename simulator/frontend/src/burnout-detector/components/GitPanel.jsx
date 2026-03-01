@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { GitCommit, Lock, Unlock, TrendingDown, TrendingUp, Moon, Sun, Bug, Zap, AlertTriangle, CheckCircle } from 'lucide-react';
 import { scoreGitSignals, BDStore } from '../data/burnoutSignals';
 
-const API = 'http://localhost:3001/api/burnout';
+const API = `${import.meta.env.VITE_API_URL || ''}/api/burnout`;
 const BLK = '1.5px solid #111';
 
 // ── Commit-type badge ─────────────────────────────────────────────────────────
