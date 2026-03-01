@@ -25,7 +25,8 @@ app.use(cors({
   origin: (origin, cb) => {
     // allow server-to-server (no origin) and listed origins
     if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-    cb(new Error(`CORS: origin ${origin} not allowed`));
+    // return null (block) instead of throwing — avoids 500
+    return cb(null, false);
   },
   credentials: true,
 }));
