@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Brain, Users, Heart, Zap, ActivitySquare, Moon, Flame, Coffee, ChevronRight, Check } from 'lucide-react';
+import WalkthroughTour from './components/WalkthroughTour';
 
 // ── Pastel + black-outline newspaper palette ──────────────────────────────────
 const MODULES = [
@@ -14,7 +15,7 @@ const MODULES = [
     stripe: '#bbf7d0',          // slightly darker for header stripe
     Icon: Brain,
     features: [
-      { label: '12 scenario types',   done: true  },
+      { label: 'Generate your scenario',   done: true  },
       { label: '3D immersive mode',   done: false },
       { label: 'AI feedback reports', done: true  },
       { label: 'Adaptive personas',   done: false },
@@ -279,9 +280,15 @@ function ModuleCard({ mod, onEnter, idx }) {
 // ── Main ──────────────────────────────────────────────────────────────────────
 export default function MainHub({ onEnter }) {
   const BLK = '2px solid #111';
+  const [showTour, setShowTour] = useState(false);
 
   return (
     <div className="hub-bg min-h-screen flex flex-col">
+
+      {/* ── WALKTHROUGH TOUR OVERLAY ── */}
+      <AnimatePresence>
+        {showTour && <WalkthroughTour onClose={() => setShowTour(false)} />}
+      </AnimatePresence>
 
       {/* ── MASTHEAD ── */}
       <motion.header
@@ -295,7 +302,14 @@ export default function MainHub({ onEnter }) {
         <div className="flex items-center justify-between px-6 py-1.5 text-[10px] font-mono text-black/40 uppercase tracking-widest"
           style={{ borderBottom: '1px solid rgba(0,0,0,0.12)' }}>
           <span>Est. 2025 · MindTrace Mental Toolkit</span>
-          <span className="flex items-center gap-2">
+          <span className="flex items-center gap-3">
+            <button
+              onClick={() => setShowTour(true)}
+              className="flex items-center gap-1 px-2 py-0.5 font-black font-mono text-[9px] uppercase tracking-widest text-black/60 hover:text-black transition-colors"
+              style={{ border: '1.5px solid rgba(0,0,0,0.18)', background: '#fff' }}
+            >
+              ▶ Tour
+            </button>
             <LiveClock />
             <span>· March 2026</span>
           </span>
